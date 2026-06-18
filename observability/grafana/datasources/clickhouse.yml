@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: ClickHouse
+    type: clickhouse
+    access: proxy
+    url: http://clickhouse:8123
+    editable: true
+    jsonData:
+      defaultDatabase: "hunyi_analysis"
+      username: "default"
+      addCorsHeader: true
+    secureJsonData:
+      password: ""
