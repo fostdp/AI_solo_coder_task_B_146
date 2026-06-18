@@ -303,6 +303,21 @@
         <div style="color:#8a95b8;font-size:12px;text-align:center;padding:10px;">暂无告警</div>
       </div>
     </div>
+
+    <div class="panel">
+      <h2>仪器传动精度对比</h2>
+      <div id="comparison-content"></div>
+    </div>
+
+    <div class="panel">
+      <h2>长期磨损退化仿真</h2>
+      <div id="degradation-content"></div>
+    </div>
+
+    <div class="panel">
+      <h2>虚拟操作体验</h2>
+      <div id="vop-content"></div>
+    </div>
   </div>
 </div>
 
@@ -318,6 +333,8 @@
 <script type="module">
 import { createArmillaryScene } from './js/armillary_3d.js';
 import { initPanel } from './js/transmission_panel.js';
+import { initComparisonAndDegradation } from './js/comparison_panel.js';
+import { initVirtualOperation } from './js/virtual_operation.js';
 
 const container = document.getElementById('canvas-container');
 const sceneAPI = createArmillaryScene(container, './config/visualization.json');
@@ -344,6 +361,9 @@ initPanel(null, {
   },
   onResetView: () => sceneAPI.resetView(),
 });
+
+initComparisonAndDegradation();
+initVirtualOperation(sceneAPI);
 </script>
 </body>
 </html>

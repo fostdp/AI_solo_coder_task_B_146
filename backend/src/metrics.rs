@@ -110,7 +110,7 @@ pub static CHANNEL_QUEUE_SIZE: Lazy<IntGauge> = Lazy::new(|| {
     .unwrap()
 });
 
-pub fn gather() -> prometheus::proto::MetricFamily {
+pub fn gather() -> Vec<prometheus::proto::MetricFamily> {
     prometheus::gather()
 }
 

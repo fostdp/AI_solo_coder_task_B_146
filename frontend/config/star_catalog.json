@@ -1,0 +1,41 @@
+{
+  "stars": [
+    { "name": "北极星", "ra": 37.95, "dec": 89.26, "magnitude": 1.98, "constellation": "小熊座", "type": "古星" },
+    { "name": "织女星", "ra": 279.23, "dec": 38.78, "magnitude": 0.03, "constellation": "天琴座", "type": "古星" },
+    { "name": "牛郎星", "ra": 297.70, "dec": 8.87, "magnitude": 0.77, "constellation": "天鹰座", "type": "古星" },
+    { "name": "天津四", "ra": 310.36, "dec": 45.28, "magnitude": 1.25, "constellation": "天鹅座", "type": "古星" },
+    { "name": "参宿四", "ra": 88.79, "dec": 7.41, "magnitude": 0.50, "constellation": "猎户座", "type": "古星" },
+    { "name": "参宿七", "ra": 78.63, "dec": -8.20, "magnitude": 0.13, "constellation": "猎户座", "type": "古星" },
+    { "name": "天狼星", "ra": 101.29, "dec": -16.72, "magnitude": -1.46, "constellation": "大犬座", "type": "古星" },
+    { "name": "南河三", "ra": 114.83, "dec": 5.22, "magnitude": 0.34, "constellation": "小犬座", "type": "古星" },
+    { "name": "北河二", "ra": 113.65, "dec": 31.89, "magnitude": 1.58, "constellation": "双子座", "type": "古星" },
+    { "name": "北河三", "ra": 116.33, "dec": 28.03, "magnitude": 1.14, "constellation": "双子座", "type": "古星" },
+    { "name": "轩辕十四", "ra": 152.09, "dec": 11.97, "magnitude": 1.35, "constellation": "狮子座", "type": "古星" },
+    { "name": "大角星", "ra": 213.92, "dec": 19.18, "magnitude": -0.05, "constellation": "牧夫座", "type": "古星" },
+    { "name": "角宿一", "ra": 201.30, "dec": -11.16, "magnitude": 0.97, "constellation": "室女座", "type": "古星" },
+    { "name": "心宿二", "ra": 247.35, "dec": -26.43, "magnitude": 1.09, "constellation": "天蝎座", "type": "古星" },
+    { "name": "五车二", "ra": 79.17, "dec": 45.99, "magnitude": 0.08, "constellation": "御夫座", "type": "古星" },
+    { "name": "毕宿五", "ra": 68.98, "dec": 16.51, "magnitude": 0.85, "constellation": "金牛座", "type": "古星" },
+    { "name": "北落师门", "ra": 344.41, "dec": -29.62, "magnitude": 1.16, "constellation": "南鱼座", "type": "古星" },
+    { "name": "天枢", "ra": 165.93, "dec": 61.75, "magnitude": 1.79, "constellation": "大熊座", "type": "古星" },
+    { "name": "天璇", "ra": 165.46, "dec": 56.38, "magnitude": 2.37, "constellation": "大熊座", "type": "古星" },
+    { "name": "天玑", "ra": 178.46, "dec": 53.69, "magnitude": 2.44, "constellation": "大熊座", "type": "古星" },
+    { "name": "天权", "ra": 183.86, "dec": 57.03, "magnitude": 3.31, "constellation": "大熊座", "type": "古星" },
+    { "name": "玉衡", "ra": 193.51, "dec": 55.96, "magnitude": 1.77, "constellation": "大熊座", "type": "古星" },
+    { "name": "开阳", "ra": 200.98, "dec": 54.93, "magnitude": 2.27, "constellation": "大熊座", "type": "古星" },
+    { "name": "摇光", "ra": 206.89, "dec": 49.31, "magnitude": 1.86, "constellation": "大熊座", "type": "古星" },
+    { "name": "南门二", "ra": 219.90, "dec": -60.83, "magnitude": -0.01, "constellation": "半人马座", "type": "南星" },
+    { "name": "老人星", "ra": 95.99, "dec": -52.70, "magnitude": -0.74, "constellation": "船底座", "type": "南星" },
+    { "name": "天关", "ra": 84.41, "dec": 21.14, "magnitude": 3.00, "constellation": "金牛座", "type": "古星" },
+    { "name": "壁宿一", "ra": 345.94, "dec": 28.08, "magnitude": 2.83, "constellation": "飞马座", "type": "古星" },
+    { "name": "室宿一", "ra": 3.31, "dec": 15.18, "magnitude": 2.49, "constellation": "飞马座", "type": "古星" },
+    { "name": "娄宿三", "ra": 28.66, "dec": 20.81, "magnitude": 2.00, "constellation": "白羊座", "type": "古星" }
+  ],
+  "meta": {
+    "epoch": "J2000.0",
+    "coordinate_system": "ICRS",
+    "units": { "ra": "degrees", "dec": "degrees", "magnitude": "apparent visual" },
+    "total_stars": 30,
+    "description": "古代浑仪可观测亮星目录，含中国古代星名与西方星座对应"
+  }
+}

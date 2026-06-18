@@ -19,12 +19,12 @@ struct FlexibleAxisParams {
 }
 
 pub struct PointingAnalyzer {
-    ch_client: Arc<ClickHouseClient>,
+    ch_client: Option<Arc<ClickHouseClient>>,
     cfg: Arc<GearParamsConfig>,
     flex: FlexibleAxisParams,
-    rx: mpsc::Receiver<PipelineMessage>,
-    alarm_tx: mpsc::Sender<PipelineMessage>,
-    ws_tx: mpsc::Sender<PipelineMessage>,
+    rx: Option<mpsc::Receiver<PipelineMessage>>,
+    alarm_tx: Option<mpsc::Sender<PipelineMessage>>,
+    ws_tx: Option<mpsc::Sender<PipelineMessage>>,
     latitude_deg: f64,
 }
 
@@ -38,7 +38,15 @@ impl PointingAnalyzer {
     ) -> Self {
         let flex = Self::compute_flexible_params(&cfg.shaft);
         PointingAnalyzer {
-            ch_client, cfg, flex, rx, alarm_tx, ws_tx,
+            ch_client: Some(ch_client), cfg, flex, rx: Some(rx), alarm_tx: Some(alarm_tx), ws_tx: Some(ws_tx),
+            latitude_deg: 34.25,
+        }
+    }
+
+    pub fn new_standalone(cfg: GearParamsConfig) -> Self {
+        let flex = Self::compute_flexible_params(&cfg.shaft);
+        PointingAnalyzer {
+            ch_client: None, cfg: Arc::new(cfg), flex, rx: None, alarm_tx: None, ws_tx: None,
             latitude_deg: 34.25,
         }
     }
@@ -178,20 +186,31 @@ impl PointingAnalyzer {
 
     pub async fn run(mut self) {
         info!("PointingAnalyzer actor started");
-        while let Some(msg) = self.rx.recv().await {
+        let rx = match self.rx.take() {
+            Some(r) => r,
+            None => { warn!("PointingAnalyzer has no rx, stopping"); return; }
+        };
+        tokio::pin!(rx);
+        while let Some(msg) = rx.recv().await {
             match msg {
                 PipelineMessage::ValidatedReading(reading) => {
                     let r = self.analyze(&reading);
-                    if let Err(e) = self.ch_client.insert_pointing_accuracy(&r).await {
-                        error!(error = %e, "Pointing CH insert error");
+                    if let Some(ch) = &self.ch_client {
+                        if let Err(e) = ch.insert_pointing_accuracy(&r).await {
+                            error!(error = %e, "Pointing CH insert error");
+                        }
                     }
                     POINTING_JOBS_TOTAL
                         .with_label_values(&[&r.sky_zone])
                         .inc();
                     let arc = Arc::new(r);
                     let m1 = PipelineMessage::PointingResult(arc.clone());
-                    let _ = self.ws_tx.send(m1.clone()).await;
-                    let _ = self.alarm_tx.send(m1).await;
+                    if let Some(ws) = &self.ws_tx {
+                        let _ = ws.send(m1.clone()).await;
+                    }
+                    if let Some(alarm) = &self.alarm_tx {
+                        let _ = alarm.send(m1).await;
+                    }
                 }
                 _ => {}
             }

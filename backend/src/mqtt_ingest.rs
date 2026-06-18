@@ -1,7 +1,7 @@
 use crate::dtu_receiver::DtuReceiver;
 use crate::metrics::{MQTT_MESSAGES_RECEIVED, SENSOR_READINGS_RECEIVED};
 use crate::models::SensorReading;
-use rumqttc::{AsyncClient, Event, EventLoop, MqttOptions, Packet, QoS};
+use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 use std::sync::Arc;
 use std::time::Duration;
 use tracing::{error, info, warn, debug};
@@ -18,8 +18,6 @@ pub async fn run_mqtt_subscriber(broker_url: &str, topic: &str, dtu: Arc<DtuRece
         host, port,
     );
     mqttoptions.set_keep_alive(Duration::from_secs(30));
-    mqttoptions.set_reconnect_delay(Duration::from_secs(5));
-    mqttoptions.set_max_inflight_messages(100);
 
     let (client, mut eventloop) = AsyncClient::new(mqttoptions, 50);
 

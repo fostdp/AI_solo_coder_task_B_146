@@ -14,11 +14,11 @@ const DEG_TO_ARCMIN: f64 = 60.0;
 const ARCMIN_TO_RAD: f64 = std::f64::consts::PI / (180.0 * 60.0);
 
 pub struct TransmissionSimulator {
-    ch_client: Arc<ClickHouseClient>,
+    ch_client: Option<Arc<ClickHouseClient>>,
     cfg: Arc<GearParamsConfig>,
-    rx: mpsc::Receiver<PipelineMessage>,
-    alarm_tx: mpsc::Sender<PipelineMessage>,
-    ws_tx: mpsc::Sender<PipelineMessage>,
+    rx: Option<mpsc::Receiver<PipelineMessage>>,
+    alarm_tx: Option<mpsc::Sender<PipelineMessage>>,
+    ws_tx: Option<mpsc::Sender<PipelineMessage>>,
 }
 
 impl TransmissionSimulator {
@@ -29,7 +29,15 @@ impl TransmissionSimulator {
         alarm_tx: mpsc::Sender<PipelineMessage>,
         ws_tx: mpsc::Sender<PipelineMessage>,
     ) -> Self {
-        TransmissionSimulator { ch_client, cfg, rx, alarm_tx, ws_tx }
+        TransmissionSimulator { ch_client: Some(ch_client), cfg, rx: Some(rx), alarm_tx: Some(alarm_tx), ws_tx: Some(ws_tx) }
+    }
+
+    pub fn new_standalone(cfg: GearParamsConfig) -> Self {
+        TransmissionSimulator { ch_client: None, cfg: Arc::new(cfg), rx: None, alarm_tx: None, ws_tx: None }
+    }
+
+    pub fn get_config(&self) -> &GearParamsConfig {
+        &self.cfg
     }
 
     fn axes(&self) -> &[AxisConfig] {
@@ -234,7 +242,13 @@ impl TransmissionSimulator {
     pub async fn run(mut self) {
         info!("TransmissionSimulator actor started");
 
-        while let Some(msg) = self.rx.recv().await {
+        let rx = match self.rx.take() {
+            Some(r) => r,
+            None => { warn!("TransmissionSimulator has no rx, stopping"); return; }
+        };
+
+        tokio::pin!(rx);
+        while let Some(msg) = rx.recv().await {
             match msg {
                 PipelineMessage::ValidatedReading(reading) => {
                     let mut results = Vec::new();
@@ -256,8 +270,10 @@ impl TransmissionSimulator {
                                 reading.temperature, 5.0,
                                 &reading.device_id, reading.timestamp,
                             );
-                            if let Err(e) = self.ch_client.insert_transmission_error(&r).await {
-                                error!(error = %e, "Transmission CH insert error");
+                            if let Some(ch) = &self.ch_client {
+                                if let Err(e) = ch.insert_transmission_error(&r).await {
+                                    error!(error = %e, "Transmission CH insert error");
+                                }
                             }
                             TRANSMISSION_JOBS_TOTAL
                                 .with_label_values(&[&axis_id.to_string()])
@@ -266,8 +282,12 @@ impl TransmissionSimulator {
                             results.push(r_arc.clone());
 
                             let m = PipelineMessage::TransmissionResult(r_arc);
-                            let _ = self.ws_tx.send(m.clone()).await;
-                            let _ = self.alarm_tx.send(m).await;
+                            if let Some(ws) = &self.ws_tx {
+                                let _ = ws.send(m.clone()).await;
+                            }
+                            if let Some(alarm) = &self.alarm_tx {
+                                let _ = alarm.send(m).await;
+                            }
                         }
                     }
                 }

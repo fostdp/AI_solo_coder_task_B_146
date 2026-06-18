@@ -1,12 +1,15 @@
 mod alarm_ws;
 mod clickhouse;
+mod degradation_sim;
 mod dtu_receiver;
 mod handlers;
+mod instrument_comparison;
 mod metrics;
 mod models;
 mod mqtt_ingest;
 mod pointing_analyzer;
 mod transmission_simulator;
+mod virtual_op;
 
 use actix::Actor;
 use actix_cors::Cors;
@@ -94,10 +97,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mqtt_broker = std::env::var("MQTT_BROKER").ok();
     let mqtt_topic = std::env::var("MQTT_TOPIC").unwrap_or_else(|_| "hunyi/sensor".to_string());
     if let Some(broker) = mqtt_broker {
+        let broker_clone = broker.clone();
         let dtu = dtu_receiver_arc.clone();
         let topic = mqtt_topic.clone();
         tokio::spawn(async move {
-            mqtt_ingest::run_mqtt_subscriber(&broker, &topic, dtu).await;
+            mqtt_ingest::run_mqtt_subscriber(&broker_clone, &topic, dtu).await;
         });
         info!(%broker, %mqtt_topic, "MQTT subscriber started");
     } else {
@@ -129,6 +133,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         dtu_receiver: dtu_receiver_arc.clone(),
         ch_client: ch_client.clone(),
         ws_server: ws_server.clone(),
+        config_dir: config_dir.clone(),
     });
 
     let port: u16 = std::env::var("SERVER_PORT")
@@ -141,23 +146,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     info!(%mqtt_topic, "WebSocket端点: ws://localhost:{port}/ws");
 
     // Metrics server (separate port)
-    tokio::spawn(async move {
-        let metrics_app = move || {
-            App::new()
-                .route("/metrics", web::get().to(metrics_endpoint))
-        };
-        if let Err(e) = HttpServer::new(metrics_app)
-            .bind(("0.0.0.0", metrics_port)) {
-            error!(error = %e, "Failed to bind metrics server");
-            return;
-        } else {
-            if let Ok(srv) = HttpServer::new(metrics_app)
-                .bind(("0.0.0.0", metrics_port)) {
-                if let Err(e) = srv.run().await {
-                    error!(error = %e, "Metrics server error");
-                }
+    let metrics_bind = ("0.0.0.0", metrics_port);
+    std::thread::spawn(move || {
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .expect("metrics tokio runtime");
+        rt.block_on(async {
+            let metrics_app = || {
+                App::new()
+                    .route("/metrics", web::get().to(metrics_endpoint))
+            };
+            if let Err(e) = HttpServer::new(metrics_app)
+                .bind(metrics_bind)
+                .expect("metrics bind")
+                .run()
+                .await
+            {
+                error!(error = %e, "Metrics server error");
             }
-        }
+        });
     });
 
     // Main HTTP server
@@ -184,6 +192,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             .route("/api/v1/pointing/accuracy", web::get().to(handlers::query_pointing_accuracy))
             .route("/api/v1/alarms", web::get().to(handlers::query_alarms))
             .route("/api/v1/gear/status", web::get().to(handlers::query_gear_status))
+            .route("/api/v1/comparison/transmission", web::post().to(handlers::compare_instruments))
+            .route("/api/v1/degradation/simulate", web::post().to(handlers::simulate_degradation))
+            .route("/api/v1/virtual/rotate", web::post().to(handlers::virtual_rotate))
             .route("/ws", web::get().to(handlers::ws_handshake))
     })
     .workers(4)

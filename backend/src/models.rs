@@ -333,3 +333,143 @@ pub fn validate_reading(r: &SensorReading, v: &ValidationRanges) -> Result<(), H
     }
     Ok(())
 }
+
+// ================ Feature: 仪器对比 ================
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum InstrumentType {
+    Hunyi,
+    Jianyi,
+    Xiangyiyi,
+    ModernEQ,
+}
+
+impl InstrumentType {
+    pub fn config_filename(&self) -> &str {
+        match self {
+            InstrumentType::Hunyi => "gear_params.json",
+            InstrumentType::Jianyi => "gear_params_jianyi.json",
+            InstrumentType::Xiangyiyi => "gear_params_xiangyiyi.json",
+            InstrumentType::ModernEQ => "gear_params_modern_eq.json",
+        }
+    }
+    pub fn display_name(&self) -> &str {
+        match self {
+            InstrumentType::Hunyi => "浑仪",
+            InstrumentType::Jianyi => "简仪",
+            InstrumentType::Xiangyiyi => "象限仪",
+            InstrumentType::ModernEQ => "现代赤道仪",
+        }
+    }
+    pub fn era(&self) -> &str {
+        match self {
+            InstrumentType::Hunyi | InstrumentType::Jianyi | InstrumentType::Xiangyiyi => "古代",
+            InstrumentType::ModernEQ => "现代",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComparisonRequest {
+    pub instruments: Vec<String>,
+    pub azimuth_angle: f64,
+    pub elevation_angle: f64,
+    pub equatorial_angle: f64,
+    pub temperature: f64,
+    #[serde(default = "default_wear")]
+    pub wear_level: f64,
+}
+
+fn default_wear() -> f64 { 0.1 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InstrumentComparisonResult {
+    pub instrument_type: String,
+    pub instrument_name: String,
+    pub era: String,
+    pub transmission_results: Vec<TransmissionErrorResult>,
+    pub cumulative_error: f64,
+    pub max_single_axis_error: f64,
+    pub avg_backlash: f64,
+    pub avg_elastic: f64,
+    pub avg_wear_error: f64,
+    pub avg_temp_effect: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ComparisonResponse {
+    pub request: ComparisonRequest,
+    pub results: Vec<InstrumentComparisonResult>,
+}
+
+// ================ Feature: 退化仿真 ================
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DegradationRequest {
+    pub instrument: String,
+    pub total_hours: u32,
+    #[serde(default = "default_steps")]
+    pub steps: u32,
+    pub initial_wear: f64,
+    pub wear_rate: f64,
+    pub temperature: f64,
+    pub azimuth_angle: f64,
+    pub elevation_angle: f64,
+}
+
+fn default_steps() -> u32 { 50 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DegradationDataPoint {
+    pub elapsed_hours: f64,
+    pub wear_level: f64,
+    pub cumulative_error: f64,
+    pub avg_backlash: f64,
+    pub avg_elastic: f64,
+    pub avg_wear_error: f64,
+    pub total_pointing_error: f64,
+    pub error_transfer_coefficient: f64,
+    pub gear_meshing_error_avg: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DegradationResponse {
+    pub instrument: String,
+    pub instrument_name: String,
+    pub total_hours: u32,
+    pub data_points: Vec<DegradationDataPoint>,
+}
+
+// ================ Feature: 虚拟操作 ================
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VirtualRotationRequest {
+    pub azimuth_angle: f64,
+    pub elevation_angle: f64,
+    pub equatorial_angle: f64,
+    pub instrument: String,
+    #[serde(default = "default_wear")]
+    pub wear_level: f64,
+    #[serde(default = "default_temperature")]
+    pub temperature: f64,
+}
+
+fn default_temperature() -> f64 { 20.0 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VisibleStar {
+    pub name: String,
+    pub ra: f64,
+    pub dec: f64,
+    pub magnitude: f64,
+    pub constellation: String,
+    pub angular_distance_arcmin: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VirtualRotationResponse {
+    pub pointing_ra: f64,
+    pub pointing_dec: f64,
+    pub transmission_error: f64,
+    pub pointing_error: f64,
+    pub error_transfer_coefficient: f64,
+    pub visible_stars: Vec<VisibleStar>,
+    pub sky_zone: String,
+}

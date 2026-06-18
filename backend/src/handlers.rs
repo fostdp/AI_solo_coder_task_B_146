@@ -1,15 +1,17 @@
 use crate::alarm_ws::{WsBroadcastServer, WsSession};
 use crate::clickhouse::ClickHouseClient;
 use crate::dtu_receiver::DtuReceiver;
-use crate::models::{ApiResponse, HunyiError, SensorReading};
+use crate::models::{ApiResponse, ComparisonRequest, DegradationRequest, HunyiError, SensorReading, VirtualRotationRequest};
 use actix_web::{web, Error, HttpResponse, Responder, HttpRequest};
 use actix_web_actors::ws;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 pub struct AppState {
     pub dtu_receiver: Arc<DtuReceiver>,
     pub ch_client: Arc<ClickHouseClient>,
     pub ws_server: actix::Addr<WsBroadcastServer>,
+    pub config_dir: PathBuf,
 }
 
 pub async fn ingest_sensor_reading(
@@ -82,4 +84,31 @@ pub async fn ws_handshake(
 
 pub async fn health_check() -> impl Responder {
     HttpResponse::Ok().json(serde_json::json!({"status":"healthy","service":"hunyi-analysis-engine"}))
+}
+
+pub async fn compare_instruments(
+    payload: web::Json<ComparisonRequest>,
+    data: web::Data<AppState>,
+) -> Result<impl Responder, HunyiError> {
+    let req = payload.into_inner();
+    let result = crate::instrument_comparison::run_comparison(&req, &data.config_dir)?;
+    Ok(HttpResponse::Ok().json(ApiResponse::success(&result)))
+}
+
+pub async fn simulate_degradation(
+    payload: web::Json<DegradationRequest>,
+    data: web::Data<AppState>,
+) -> Result<impl Responder, HunyiError> {
+    let req = payload.into_inner();
+    let result = crate::degradation_sim::run_degradation(&req, &data.config_dir)?;
+    Ok(HttpResponse::Ok().json(ApiResponse::success(&result)))
+}
+
+pub async fn virtual_rotate(
+    payload: web::Json<VirtualRotationRequest>,
+    data: web::Data<AppState>,
+) -> Result<impl Responder, HunyiError> {
+    let req = payload.into_inner();
+    let result = crate::virtual_op::run_virtual_rotation(&req, &data.config_dir)?;
+    Ok(HttpResponse::Ok().json(ApiResponse::success(&result)))
 }

@@ -256,3 +256,76 @@ INSERT INTO sky_zone_reference VALUES
 (4, '南天区', 0, 360, -60, -30, '南天中纬度区域'),
 (5, '南天极', 0, 360, -90, -60, '南天极附近区域'),
 (6, '黄道带', 0, 360, -23.5, 23.5, '黄道附近区域，行星观测带');
+
+-- ============================================
+-- 仪器对比结果表
+-- ============================================
+CREATE TABLE IF NOT EXISTS instrument_comparison_results (
+    timestamp DateTime64(3, 'Asia/Shanghai') DEFAULT now64(3),
+    instrument_type String COMMENT '仪器类型: hunyi/jianyi/xiangyiyi/modern_eq',
+    instrument_name String COMMENT '仪器显示名',
+    era String COMMENT '时代: 古代/现代',
+    cumulative_error Float64 COMMENT '累积传动误差(角分)',
+    max_single_axis_error Float64 COMMENT '最大单轴误差(角分)',
+    avg_backlash Float64 COMMENT '平均齿隙误差(角分)',
+    avg_elastic Float64 COMMENT '平均弹性变形误差(角分)',
+    avg_wear_error Float64 COMMENT '平均磨损误差(角分)',
+    avg_temp_effect Float64 COMMENT '平均温度效应(角分)',
+    input_azimuth Float64 COMMENT '输入方位角(度)',
+    input_elevation Float64 COMMENT '输入高度角(度)',
+    wear_level Float64 COMMENT '磨损等级',
+    temperature Float64 COMMENT '温度(摄氏度)'
+)
+ENGINE = MergeTree()
+PARTITION BY toYYYYMM(timestamp)
+ORDER BY (instrument_type, timestamp)
+TTL timestamp + INTERVAL 1 YEAR DELETE
+SETTINGS index_granularity = 8192
+COMMENT '仪器传动精度对比结果表';
+
+-- ============================================
+-- 退化仿真结果表
+-- ============================================
+CREATE TABLE IF NOT EXISTS degradation_simulation_results (
+    timestamp DateTime64(3, 'Asia/Shanghai') DEFAULT now64(3),
+    instrument_type String COMMENT '仪器类型',
+    elapsed_hours Float64 COMMENT '已运行小时数',
+    wear_level Float64 COMMENT '当前磨损等级',
+    cumulative_error Float64 COMMENT '累积传动误差(角分)',
+    avg_backlash Float64 COMMENT '平均齿隙(角分)',
+    avg_elastic Float64 COMMENT '平均弹性(角分)',
+    avg_wear_error Float64 COMMENT '平均磨损误差(角分)',
+    total_pointing_error Float64 COMMENT '总指向误差(角分)',
+    error_transfer_coefficient Float64 COMMENT '误差传递系数',
+    gear_meshing_error_avg Float64 COMMENT '平均啮合误差(角分)'
+)
+ENGINE = MergeTree()
+PARTITION BY toYYYYMM(timestamp)
+ORDER BY (instrument_type, elapsed_hours)
+TTL timestamp + INTERVAL 1 YEAR DELETE
+SETTINGS index_granularity = 8192
+COMMENT '长期磨损退化仿真结果表';
+
+-- ============================================
+-- 虚拟操作记录表
+-- ============================================
+CREATE TABLE IF NOT EXISTS virtual_operation_logs (
+    timestamp DateTime64(3, 'Asia/Shanghai') DEFAULT now64(3),
+    session_id String COMMENT '会话ID',
+    instrument_type String COMMENT '仪器类型',
+    azimuth_angle Float64 COMMENT '方位角(度)',
+    elevation_angle Float64 COMMENT '高度角(度)',
+    equatorial_angle Float64 COMMENT '赤道角(度)',
+    pointing_ra Float64 COMMENT '指向赤经(度)',
+    pointing_dec Float64 COMMENT '指向赤纬(度)',
+    transmission_error Float64 COMMENT '传动误差(角分)',
+    pointing_error Float64 COMMENT '指向误差(角分)',
+    visible_star_count UInt32 COMMENT '可见星数',
+    sky_zone String COMMENT '天区'
+)
+ENGINE = MergeTree()
+PARTITION BY toYYYYMM(timestamp)
+ORDER BY (session_id, timestamp)
+TTL timestamp + INTERVAL 90 DAY DELETE
+SETTINGS index_granularity = 8192
+COMMENT '公众虚拟操作日志表';
