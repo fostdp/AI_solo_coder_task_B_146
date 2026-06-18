@@ -1,0 +1,181 @@
+version: '3.8'
+
+x-clickhouse-common: &clickhouse-common
+  image: clickhouse/clickhouse-server:24.3
+  ulimits:
+    nofile:
+      soft: 262144
+      hard: 262144
+  healthcheck:
+    test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+    interval: 5s
+    timeout: 3s
+    retries: 20
+    start_period: 10s
+
+services:
+  # ========== ClickHouse 时序数据库 ==========
+  clickhouse:
+    <<: *clickhouse-common
+    container_name: hunyi-clickhouse
+    hostname: clickhouse
+    restart: unless-stopped
+    environment:
+      - CLICKHOUSE_DB=hunyi_analysis
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./clickhouse/config.d:/etc/clickhouse-server/config.d:ro
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    networks:
+      - hunyi-net
+
+  # ========== EMQX MQTT Broker ==========
+  mqtt:
+    image: emqx:5.7
+    container_name: hunyi-mqtt
+    hostname: mqtt
+    restart: unless-stopped
+    environment:
+      - EMQX_NAME=hunyi-mqtt
+      - EMQX_HOST=mqtt
+      - EMQX_ALLOW_ANONYMOUS=true
+      - EMQX_LISTENERS__TCP__DEFAULT__BIND=0.0.0.0:1883
+    volumes:
+      - mqtt_data:/opt/emqx/data
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "18083:18083"
+    networks:
+      - hunyi-net
+
+  # ========== Rust 后端服务 ==========
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hunyi-backend
+    hostname: backend
+    restart: unless-stopped
+    environment:
+      - RUST_LOG=info,hunyi_backend=debug,tower_http=debug
+      - TZ=Asia/Shanghai
+      - CLICKHOUSE_URL=http://clickhouse:8123
+      - CLICKHOUSE_DB=hunyi_analysis
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - MQTT_BROKER=mqtt://mqtt:1883
+      - MQTT_TOPIC=hunyi/sensor
+      - PROMETHEUS_PORT=8081
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      mqtt:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - hunyi-net
+
+  # ========== 前端 Nginx ==========
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hunyi-frontend
+    hostname: frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - hunyi-net
+
+  # ========== 传感器模拟器（默认不自动启动） ==========
+  simulator:
+    build:
+      context: ./simulator
+      dockerfile: Dockerfile
+    container_name: hunyi-simulator
+    restart: "no"
+    environment:
+      - TZ=Asia/Shanghai
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    networks:
+      - hunyi-net
+    profiles:
+      - simulator
+
+  # ========== Prometheus 监控 ==========
+  prometheus:
+    image: prom/prometheus:v2.52
+    container_name: hunyi-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+    networks:
+      - hunyi-net
+    profiles:
+      - monitoring
+
+  # ========== Grafana 可视化 ==========
+  grafana:
+    image: grafana/grafana:10.4
+    container_name: hunyi-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./observability/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - clickhouse
+    networks:
+      - hunyi-net
+    profiles:
+      - monitoring
+
+volumes:
+  clickhouse_data:
+  mqtt_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  hunyi-net:
+    driver: bridge
+    name: hunyi-net
