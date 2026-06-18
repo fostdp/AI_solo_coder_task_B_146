@@ -9,6 +9,34 @@ use rand::Rng;
 use std::path::PathBuf;
 use tracing::info;
 
+const ARCHARD_K_BRONZE: f64 = 2.5e-4;
+const ARCHARD_K_STEEL: f64 = 5.0e-5;
+const ACCEL_FACTOR: f64 = 8.0;
+const LOAD_N: f64 = 15.0;
+const SLIDE_RATIO: f64 = 0.04;
+const HARDNESS_BRONZE_HV: f64 = 800.0;
+const HARDNESS_STEEL_HV: f64 = 2500.0;
+
+pub fn archard_wear_increment(
+    is_ancient: bool,
+    wear_rate: f64,
+    hours_per_step: f64,
+    current_wear: f64,
+) -> f64 {
+    let k = if is_ancient { ARCHARD_K_BRONZE } else { ARCHARD_K_STEEL };
+    let hardness = if is_ancient { HARDNESS_BRONZE_HV } else { HARDNESS_STEEL_HV };
+
+    let contact_pressure = LOAD_N * (1.0 + current_wear * 3.0);
+    let slide_distance = SLIDE_RATIO * hours_per_step * 3600.0 * ACCEL_FACTOR;
+    let base_increment = (k * contact_pressure * slide_distance) / hardness;
+    let wear_progression = 1.0 + current_wear * 2.0;
+
+    let mut rng = rand::thread_rng();
+    let noise = rng.gen_range(0.85..1.15);
+
+    (base_increment * wear_rate * wear_progression * noise).min(0.02)
+}
+
 pub fn run_degradation(
     req: &DegradationRequest,
     config_dir: &PathBuf,
@@ -24,12 +52,13 @@ pub fn run_degradation(
     let steps = req.steps.max(1);
     let hours_per_step = req.total_hours as f64 / steps as f64;
     let mut current_wear = req.initial_wear;
-    let mut rng = rand::thread_rng();
+    let is_ancient = inst_type != crate::models::InstrumentType::ModernEQ;
 
     info!(
         instrument = inst_type.display_name(),
         total_hours = req.total_hours,
         steps = steps,
+        wear_model = if is_ancient { "Archard-K(Bronze)" } else { "Archard-K(Steel)" },
         "Starting degradation simulation"
     );
 
@@ -37,7 +66,9 @@ pub fn run_degradation(
         let elapsed_hours = step as f64 * hours_per_step;
 
         if step > 0 {
-            let wear_increment = rng.gen_range(0.0001..0.0005) * req.wear_rate * hours_per_step / 100.0;
+            let wear_increment = archard_wear_increment(
+                is_ancient, req.wear_rate, hours_per_step, current_wear,
+            );
             current_wear = (current_wear + wear_increment).min(0.99);
         }
 

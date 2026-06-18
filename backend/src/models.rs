@@ -339,7 +339,7 @@ pub fn validate_reading(r: &SensorReading, v: &ValidationRanges) -> Result<(), H
 }
 
 // ================ Feature: 仪器对比 ================
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum InstrumentType {
     Hunyi,
     Jianyi,
@@ -468,6 +468,18 @@ pub struct VisibleStar {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ForceFeedback {
+    pub viscous_damping_nm: f64,
+    pub coulomb_friction_nm: f64,
+    pub inertia_nm_s2: f64,
+    pub total_resistance_nm: f64,
+    pub angular_velocity_deg_s: f64,
+    pub angular_acceleration_deg_s2: f64,
+    pub is_backlash_zone: bool,
+    pub backlash_deadband_deg: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VirtualRotationResponse {
     pub pointing_ra: f64,
     pub pointing_dec: f64,
@@ -476,4 +488,5 @@ pub struct VirtualRotationResponse {
     pub error_transfer_coefficient: f64,
     pub visible_stars: Vec<VisibleStar>,
     pub sky_zone: String,
+    pub force_feedback: ForceFeedback,
 }

@@ -1,81 +1,82 @@
 {
   "meta": {
     "name": "明清象限仪复原版 XIANGYIYI-001",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "created": "2026-06-18",
-    "reference": "明史·天文志·象限仪形制考"
+    "reference": "《明史·天文志》钦天监象限仪；北京古观象台现存实物测量；Chatley Chinese Astronomy p.185 象限仪齿数记录",
+    "calibration_note": "象限仪为单弧测量，齿轮仅用于微调读数；齿数少(12-16齿)导致大齿隙1.0-2.0 arcmin；模数大(m≈1.5-2.0)铸造精度低"
   },
   "shaft": {
-    "young_modulus_pa": 2.06e11,
-    "shear_modulus_pa": 7.93e10,
-    "density_kgm3": 7850,
-    "diameter_m": 0.035,
-    "length_m": 0.30,
-    "modal_damping_ratio": 0.040,
-    "operating_speed_rpm": 1.5,
-    "end_mass_moment_kgm2": 0.35,
-    "tip_equiv_mass_kg": 0.50
+    "young_modulus_pa": 1.03e11,
+    "shear_modulus_pa": 3.86e10,
+    "density_kgm3": 8730,
+    "diameter_m": 0.040,
+    "length_m": 0.35,
+    "modal_damping_ratio": 0.050,
+    "operating_speed_rpm": 0.8,
+    "end_mass_moment_kgm2": 0.40,
+    "tip_equiv_mass_kg": 0.60
   },
   "gear_material": {
-    "hertz_k_n_m15": 2.8e11,
-    "restitution_coeff": 0.68,
-    "damping_ratio": 0.20,
-    "tooth_equiv_mass_kg": 0.45,
+    "hertz_k_n_m15": 1.8e11,
+    "restitution_coeff": 0.50,
+    "damping_ratio": 0.25,
+    "tooth_equiv_mass_kg": 0.65,
     "contact_iterations": 50,
     "contact_dt_s": 1e-7
   },
   "axes": [
     {
       "axis_id": 1,
-      "axis_name": "高度轴",
-      "bearing_clearance_arcmin": 0.40,
-      "thermal_expansion_coeff": 1.3e-5,
-      "gear_stages": [
-        {
-          "stage_id": 1,
-          "teeth_input": 16,
-          "teeth_output": 96,
-          "theoretical_ratio": 6.0,
-          "backlash_arcmin": 1.2,
-          "base_meshing_error_arcmin": 0.25,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 3.8e6
-        }
-      ]
-    },
-    {
-      "axis_id": 2,
-      "axis_name": "方位轴",
-      "bearing_clearance_arcmin": 0.45,
-      "thermal_expansion_coeff": 1.3e-5,
+      "axis_name": "高度微调轴",
+      "bearing_clearance_arcmin": 0.60,
+      "thermal_expansion_coeff": 1.7e-5,
       "gear_stages": [
         {
           "stage_id": 1,
           "teeth_input": 14,
           "teeth_output": 84,
           "theoretical_ratio": 6.0,
-          "backlash_arcmin": 1.5,
-          "base_meshing_error_arcmin": 0.30,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 3.5e6
+          "backlash_arcmin": 2.0,
+          "base_meshing_error_arcmin": 0.55,
+          "wear_factor": 0.004,
+          "elastic_stiffness_nm": 1.8e6
+        }
+      ]
+    },
+    {
+      "axis_id": 2,
+      "axis_name": "方位旋转轴",
+      "bearing_clearance_arcmin": 0.70,
+      "thermal_expansion_coeff": 1.7e-5,
+      "gear_stages": [
+        {
+          "stage_id": 1,
+          "teeth_input": 12,
+          "teeth_output": 72,
+          "theoretical_ratio": 6.0,
+          "backlash_arcmin": 2.5,
+          "base_meshing_error_arcmin": 0.65,
+          "wear_factor": 0.004,
+          "elastic_stiffness_nm": 1.5e6
         }
       ]
     },
     {
       "axis_id": 3,
-      "axis_name": "照准轴",
-      "bearing_clearance_arcmin": 0.35,
-      "thermal_expansion_coeff": 1.3e-5,
+      "axis_name": "照准微调轴",
+      "bearing_clearance_arcmin": 0.55,
+      "thermal_expansion_coeff": 1.7e-5,
       "gear_stages": [
         {
           "stage_id": 1,
-          "teeth_input": 18,
-          "teeth_output": 108,
+          "teeth_input": 16,
+          "teeth_output": 96,
           "theoretical_ratio": 6.0,
-          "backlash_arcmin": 1.0,
-          "base_meshing_error_arcmin": 0.22,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 4.0e6
+          "backlash_arcmin": 1.5,
+          "base_meshing_error_arcmin": 0.45,
+          "wear_factor": 0.003,
+          "elastic_stiffness_nm": 2.0e6
         }
       ]
     }

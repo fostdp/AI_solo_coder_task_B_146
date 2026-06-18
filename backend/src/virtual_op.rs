@@ -1,5 +1,5 @@
 use crate::models::{
-    HunyiError, VirtualRotationRequest,
+    ForceFeedback, HunyiError, VirtualRotationRequest,
     VirtualRotationResponse, VisibleStar,
 };
 use crate::pointing_analyzer::PointingAnalyzer;
@@ -9,6 +9,48 @@ use std::path::PathBuf;
 
 const DEG_TO_ARCMIN: f64 = 60.0;
 const DEG_TO_RAD: f64 = std::f64::consts::PI / 180.0;
+
+const VISCOUS_DAMPING_ANCIENT: f64 = 0.35;
+const VISCOUS_DAMPING_MODERN: f64 = 0.08;
+const COULOMB_FRICTION_ANCIENT: f64 = 0.15;
+const COULOMB_FRICTION_MODERN: f64 = 0.02;
+const INERTIA_ANCIENT: f64 = 0.50;
+const INERTIA_MODERN: f64 = 0.05;
+
+fn compute_force_feedback(
+    is_ancient: bool,
+    angular_velocity_deg_s: f64,
+    wear_level: f64,
+    total_backlash_arcmin: f64,
+) -> ForceFeedback {
+    let (base_viscous, base_coulomb, base_inertia) = if is_ancient {
+        (VISCOUS_DAMPING_ANCIENT, COULOMB_FRICTION_ANCIENT, INERTIA_ANCIENT)
+    } else {
+        (VISCOUS_DAMPING_MODERN, COULOMB_FRICTION_MODERN, INERTIA_MODERN)
+    };
+
+    let wear_factor = 1.0 + wear_level * 1.5;
+    let viscous = base_viscous * angular_velocity_deg_s.abs() * wear_factor;
+    let coulomb = base_coulomb * wear_factor * if angular_velocity_deg_s.abs() > 0.01 { 1.0 } else { 0.3 };
+    let inertia = base_inertia * wear_factor;
+
+    let total_resistance = viscous + coulomb;
+    let angular_acceleration = if inertia > 1e-9 { total_resistance / inertia } else { 0.0 };
+
+    let backlash_deadband = total_backlash_arcmin / 60.0;
+    let is_backlash_zone = angular_velocity_deg_s.abs() < 0.05 && total_backlash_arcmin > 0.1;
+
+    ForceFeedback {
+        viscous_damping_nm: viscous,
+        coulomb_friction_nm: coulomb,
+        inertia_nm_s2: inertia,
+        total_resistance_nm: total_resistance,
+        angular_velocity_deg_s,
+        angular_acceleration_deg_s2: angular_acceleration,
+        is_backlash_zone,
+        backlash_deadband_deg: backlash_deadband,
+    }
+}
 
 struct StarEntry {
     name: &'static str,
@@ -68,6 +110,7 @@ pub fn run_virtual_rotation(
 
     let wear_levels = vec![req.wear_level; 3];
     let mut total_cumulative = 0.0;
+    let mut total_backlash = 0.0;
     let ts = Utc::now();
 
     for axis in &sim.get_config().axes {
@@ -81,7 +124,17 @@ pub fn run_virtual_rotation(
             req.temperature, 5.0, &req.instrument, ts,
         );
         total_cumulative += r.accumulated_error;
+        total_backlash += r.backlash_error;
     }
+
+    let is_ancient = inst_type != crate::models::InstrumentType::ModernEQ;
+    let angular_velocity_deg_s = sim.get_config().shaft.operating_speed_rpm * 6.0;
+    let force_feedback = compute_force_feedback(
+        is_ancient,
+        angular_velocity_deg_s,
+        req.wear_level,
+        total_backlash,
+    );
 
     let lst = 12.0 * 15.0;
     let lat = 34.25;
@@ -131,6 +184,7 @@ pub fn run_virtual_rotation(
         error_transfer_coefficient: etc,
         visible_stars,
         sky_zone,
+        force_feedback,
     })
 }
 

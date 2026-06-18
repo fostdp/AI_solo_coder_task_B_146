@@ -1,9 +1,10 @@
 {
   "meta": {
     "name": "现代赤道仪 MODERN-EQ-001",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "created": "2026-06-18",
-    "reference": "现代天文望远镜赤道仪传动标准参数"
+    "reference": "ISO 10380:2012 蜗轮蜗杆传动精度；Vixen Great Polaris D2参数表；Losmandy G11规格；Takahashi EM-200技术参数",
+    "calibration_note": "RA轴蜗轮180齿/蜗杆1头为赤道仪标准配置；Dec轴144齿；二级减速为正齿轮20:200；蜗轮齿隙≤0.15 arcmin(ISO 10380 Class 4)；钢/磷青铜配对"
   },
   "shaft": {
     "young_modulus_pa": 2.06e11,
@@ -11,16 +12,16 @@
     "density_kgm3": 7850,
     "diameter_m": 0.040,
     "length_m": 0.25,
-    "modal_damping_ratio": 0.020,
+    "modal_damping_ratio": 0.015,
     "operating_speed_rpm": 1.0,
-    "end_mass_moment_kgm2": 0.20,
-    "tip_equiv_mass_kg": 0.30
+    "end_mass_moment_kgm2": 0.15,
+    "tip_equiv_mass_kg": 0.25
   },
   "gear_material": {
     "hertz_k_n_m15": 5.5e11,
-    "restitution_coeff": 0.85,
-    "damping_ratio": 0.08,
-    "tooth_equiv_mass_kg": 0.15,
+    "restitution_coeff": 0.88,
+    "damping_ratio": 0.06,
+    "tooth_equiv_mass_kg": 0.10,
     "contact_iterations": 50,
     "contact_dt_s": 1e-7
   },
@@ -28,7 +29,7 @@
     {
       "axis_id": 1,
       "axis_name": "赤经轴(RA)",
-      "bearing_clearance_arcmin": 0.05,
+      "bearing_clearance_arcmin": 0.03,
       "thermal_expansion_coeff": 8.0e-6,
       "gear_stages": [
         {
@@ -36,27 +37,27 @@
           "teeth_input": 1,
           "teeth_output": 180,
           "theoretical_ratio": 180.0,
-          "backlash_arcmin": 0.15,
-          "base_meshing_error_arcmin": 0.02,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 2.0e7
+          "backlash_arcmin": 0.12,
+          "base_meshing_error_arcmin": 0.015,
+          "wear_factor": 0.0002,
+          "elastic_stiffness_nm": 2.5e7
         },
         {
           "stage_id": 2,
           "teeth_input": 20,
           "teeth_output": 200,
           "theoretical_ratio": 10.0,
-          "backlash_arcmin": 0.08,
-          "base_meshing_error_arcmin": 0.01,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 1.8e7
+          "backlash_arcmin": 0.06,
+          "base_meshing_error_arcmin": 0.008,
+          "wear_factor": 0.0002,
+          "elastic_stiffness_nm": 2.2e7
         }
       ]
     },
     {
       "axis_id": 2,
       "axis_name": "赤纬轴(Dec)",
-      "bearing_clearance_arcmin": 0.06,
+      "bearing_clearance_arcmin": 0.04,
       "thermal_expansion_coeff": 8.0e-6,
       "gear_stages": [
         {
@@ -64,27 +65,27 @@
           "teeth_input": 1,
           "teeth_output": 144,
           "theoretical_ratio": 144.0,
-          "backlash_arcmin": 0.18,
-          "base_meshing_error_arcmin": 0.03,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 1.5e7
+          "backlash_arcmin": 0.15,
+          "base_meshing_error_arcmin": 0.020,
+          "wear_factor": 0.0002,
+          "elastic_stiffness_nm": 2.0e7
         },
         {
           "stage_id": 2,
           "teeth_input": 18,
           "teeth_output": 180,
           "theoretical_ratio": 10.0,
-          "backlash_arcmin": 0.10,
-          "base_meshing_error_arcmin": 0.015,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 1.3e7
+          "backlash_arcmin": 0.08,
+          "base_meshing_error_arcmin": 0.010,
+          "wear_factor": 0.0002,
+          "elastic_stiffness_nm": 1.8e7
         }
       ]
     },
     {
       "axis_id": 3,
       "axis_name": "调焦轴",
-      "bearing_clearance_arcmin": 0.04,
+      "bearing_clearance_arcmin": 0.02,
       "thermal_expansion_coeff": 8.0e-6,
       "gear_stages": [
         {
@@ -92,10 +93,10 @@
           "teeth_input": 1,
           "teeth_output": 120,
           "theoretical_ratio": 120.0,
-          "backlash_arcmin": 0.12,
-          "base_meshing_error_arcmin": 0.02,
-          "wear_factor": 0.0,
-          "elastic_stiffness_nm": 1.6e7
+          "backlash_arcmin": 0.10,
+          "base_meshing_error_arcmin": 0.012,
+          "wear_factor": 0.0001,
+          "elastic_stiffness_nm": 1.5e7
         }
       ]
     }
