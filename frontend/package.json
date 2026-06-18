@@ -1,0 +1,12 @@
+{
+  "name": "hunyi-frontend",
+  "version": "1.0.0",
+  "description": "古代浑仪机械传动误差仿真与天体指向精度分析系统前端",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static build completed'",
+    "dev": "python -m http.server 8080"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
