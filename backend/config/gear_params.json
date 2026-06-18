@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "name": "宋代浑仪复原版 HUNYI-001",
+    "version": "1.0.0",
+    "created": "2026-06-18",
+    "reference": "宋史·天文志·浑仪形制考"
+  },
+  "shaft": {
+    "young_modulus_pa": 2.06e11,
+    "shear_modulus_pa": 7.93e10,
+    "density_kgm3": 7850,
+    "diameter_m": 0.025,
+    "length_m": 0.45,
+    "modal_damping_ratio": 0.035,
+    "operating_speed_rpm": 2.5,
+    "end_mass_moment_kgm2": 0.55,
+    "tip_equiv_mass_kg": 0.8
+  },
+  "gear_material": {
+    "hertz_k_n_m15": 2.8e11,
+    "restitution_coeff": 0.72,
+    "damping_ratio": 0.18,
+    "tooth_equiv_mass_kg": 0.38,
+    "contact_iterations": 50,
+    "contact_dt_s": 1e-7
+  },
+  "axes": [
+    {
+      "axis_id": 1,
+      "axis_name": "方位轴",
+      "bearing_clearance_arcmin": 0.3,
+      "thermal_expansion_coeff": 1.2e-5,
+      "gear_stages": [
+        {
+          "stage_id": 1,
+          "teeth_input": 20,
+          "teeth_output": 120,
+          "theoretical_ratio": 6.0,
+          "backlash_arcmin": 0.8,
+          "base_meshing_error_arcmin": 0.15,
+          "wear_factor": 0.0,
+          "elastic_stiffness_nm": 5.0e6
+        },
+        {
+          "stage_id": 2,
+          "teeth_input": 25,
+          "teeth_output": 180,
+          "theoretical_ratio": 7.2,
+          "backlash_arcmin": 0.6,
+          "base_meshing_error_arcmin": 0.12,
+          "wear_factor": 0.0,
+          "elastic_stiffness_nm": 4.5e6
+        }
+      ]
+    },
+    {
+      "axis_id": 2,
+      "axis_name": "赤纬轴",
+      "bearing_clearance_arcmin": 0.35,
+      "thermal_expansion_coeff": 1.15e-5,
+      "gear_stages": [
+        {
+          "stage_id": 1,
+          "teeth_input": 18,
+          "teeth_output": 144,
+          "theoretical_ratio": 8.0,
+          "backlash_arcmin": 0.9,
+          "base_meshing_error_arcmin": 0.18,
+          "wear_factor": 0.0,
+          "elastic_stiffness_nm": 4.8e6
+        },
+        {
+          "stage_id": 2,
+          "teeth_input": 22,
+          "teeth_output": 176,
+          "theoretical_ratio": 8.0,
+          "backlash_arcmin": 0.7,
+          "base_meshing_error_arcmin": 0.14,
+          "wear_factor": 0.0,
+          "elastic_stiffness_nm": 4.2e6
+        }
+      ]
+    },
+    {
+      "axis_id": 3,
+      "axis_name": "赤道轴",
+      "bearing_clearance_arcmin": 0.28,
+      "thermal_expansion_coeff": 1.25e-5,
+      "gear_stages": [
+        {
+          "stage_id": 1,
+          "teeth_input": 24,
+          "teeth_output": 144,
+          "theoretical_ratio": 6.0,
+          "backlash_arcmin": 0.7,
+          "base_meshing_error_arcmin": 0.13,
+          "wear_factor": 0.0,
+          "elastic_stiffness_nm": 5.2e6
+        },
+        {
+          "stage_id": 2,
+          "teeth_input": 20,
+          "teeth_output": 200,
+          "theoretical_ratio": 10.0,
+          "backlash_arcmin": 0.85,
+          "base_meshing_error_arcmin": 0.16,
+          "wear_factor": 0.0,
+          "elastic_stiffness_nm": 4.0e6
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "angle_range_deg": [0.0, 360.0],
+    "elevation_range_deg": [0.0, 90.0],
+    "temperature_range_c": [-30.0, 60.0],
+    "humidity_range_pct": [0.0, 100.0],
+    "max_wear_level": 1.0,
+    "max_error_arcmin": 100.0
+  }
+}
