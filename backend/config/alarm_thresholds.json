@@ -1,0 +1,27 @@
+{
+  "cumulative_error": {
+    "warning_threshold_arcmin": 0.8,
+    "alarm_threshold_arcmin": 1.0,
+    "debounce_seconds": 300
+  },
+  "gear_wear": {
+    "warning_threshold": 0.6,
+    "alarm_threshold": 0.85,
+    "debounce_seconds": 300
+  },
+  "sensor_health": {
+    "enable_stale_check": true,
+    "stale_timeout_seconds": 120,
+    "outlier_zscore": 3.0
+  },
+  "notification": {
+    "level_names": {
+      "1": "预警",
+      "2": "告警",
+      "3": "严重"
+    },
+    "ws_broadcast": true,
+    "retry_on_disconnect": true,
+    "reconnect_interval_ms": 3000
+  }
+}
