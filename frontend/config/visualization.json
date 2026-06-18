@@ -1,0 +1,51 @@
+{
+  "scene": {
+    "camera_position": [5, 3.5, 7],
+    "auto_rotate_speed": 0.15,
+    "fog_density": 0.015
+  },
+  "armillary_rings": {
+    "liuhe_radius": 2.8,
+    "liuhe_thickness": 0.06,
+    "liuhe_opacity": 0.65,
+    "sanchen_radius": 2.2,
+    "sanchen_thickness": 0.05,
+    "sanchen_opacity": 0.75,
+    "ecliptic_obliquity_deg": 23.5,
+    "siyou_radius": 1.6,
+    "siyou_thickness": 0.055,
+    "siyou_opacity": 0.85
+  },
+  "sight_tube": {
+    "length": 3.0,
+    "radius": 0.035
+  },
+  "gears": [
+    {"id": 0, "radius": 0.55, "pos": [2.0, -1.2, 0.3], "teeth": 80, "color": "0xfbbf24", "base_speed_rads": 1.8, "pair_with": 1},
+    {"id": 1, "radius": 0.45, "pos": [2.0, -0.7, -0.5], "teeth": 60, "color": "0xf59e0b", "base_speed_rads": -2.4, "pair_with": 0},
+    {"id": 2, "radius": 0.38, "pos": [-2.0, -1.2, 0.5], "teeth": 48, "color": "0xfbbf24", "base_speed_rads": 2.2, "pair_with": 3},
+    {"id": 3, "radius": 0.48, "pos": [-2.0, -0.6, -0.3], "teeth": 72, "color": "0xf59e0b", "base_speed_rads": -1.47, "pair_with": 2},
+    {"id": 4, "radius": 0.32, "pos": [0, -2.0, 1.8], "teeth": 40, "color": "0xfbbf24", "base_speed_rads": 2.6, "pair_with": 5},
+    {"id": 5, "radius": 0.42, "pos": [0.5, -2.0, -1.8], "teeth": 56, "color": "0xf59e0b", "base_speed_rads": -1.86, "pair_with": 4}
+  ],
+  "collision": {
+    "hertz_k": 120000,
+    "contact_threshold_ratio": 0.02,
+    "impulse_gain": 1e-6,
+    "flash_decay_rate": 3.5
+  },
+  "colors": {
+    "liuhe": "0xa78bfa",
+    "sanchen": "0x7eb4ff",
+    "siyou": "0x4c8bf5",
+    "ecliptic": "0xfbbf24",
+    "theoretical_arrow": "0x4ade80",
+    "error_arrow": "0xf87171",
+    "contact_flash": "0xff4444"
+  },
+  "vector_arrows": {
+    "length_scale": 2.0,
+    "head_length": 0.2,
+    "head_width": 0.1
+  }
+}
