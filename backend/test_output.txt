@@ -1,0 +1,614 @@
+﻿cargo : warning: unused import: `debug`
+所在位置 行:1 字符: 88
++ ... coder_task_B_146\backend; cargo test -- --test-threads=1 2>&1 | Out-F ...
++                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: unused import: `debug`:S 
+   tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  --> src\alarm_ws.rs:12:34
+   |
+12 | use tracing::{error, info, warn, debug};
+   |                                  ^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `info`
+ --> src\dtu_receiver.rs:5:29
+  |
+5 | use tracing::{debug, error, info, warn};
+  |                             ^^^^
+
+warning: unused import: `debug`
+ --> src\pointing_analyzer.rs:8:34
+  |
+8 | use tracing::{error, info, warn, debug};
+  |                                  ^^^^^
+
+warning: unused import: `debug`
+  --> src\transmission_simulator.rs:11:34
+   |
+11 | use tracing::{error, info, warn, debug};
+   |                                  ^^^^^
+
+warning: variable does not need to be mutable
+  --> src\alarm_ws.rs:39:13
+   |
+39 |         let mut last = self.last_alarm_times.lock();
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable `total_temp` is assigned to, but never used
+  --> src\degradation_sim.rs:49:13
+   |
+49 |         let mut total_temp = 0.0;
+   |             ^^^^^^^^^^^^^^
+   |
+   = note: consider using `_total_temp` instead
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by defaul
+t
+
+warning: value assigned to `total_temp` is never read
+  --> src\degradation_sim.rs:69:13
+   |
+69 |             total_temp += r.temperature_effect;
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by defa
+ult
+
+warning: unused variable: `az_rad`
+   --> src\pointing_analyzer.rs:103:13
+    |
+103 |         let az_rad = az * DEG_TO_RAD;
+    |             ^^^^^^ help: if this is intentional, prefix it with an unders
+core: `_az_rad`
+
+warning: unused variable: `flex`
+   --> src\pointing_analyzer.rs:165:13
+    |
+165 |         let flex = Self::tube_flexure(t_el, 0.08);
+    |             ^^^^ help: if this is intentional, prefix it with an undersco
+re: `_flex`
+
+warning: methods `insert_gear_status`, `query_recent_sensor_readings`, `query_r
+ecent_alarms`, and `query_pointing_stats_by_zone` are never used
+   --> src\clickhouse.rs:72:18
+    |
+ 14 | impl ClickHouseClient {
+    | --------------------- methods in this implementation
+...
+ 72 |     pub async fn insert_gear_status(&self, g: &GearStatus) -> Result<(), 
+Box<dyn Error + Send + Sync>> {
+    |                  ^^^^^^^^^^^^^^^^^^
+...
+ 81 |     pub async fn query_recent_sensor_readings(&self, device_id: &str, lim
+it: u32) -> Result<Vec<SensorReading>, Box<dyn Error + Sen...
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 99 |     pub async fn query_recent_alarms(&self, limit: u32) -> Result<Vec<Ala
+rmEvent>, Box<dyn Error + Send + Sync>> {
+    |                  ^^^^^^^^^^^^^^^^^^^
+...
+117 |     pub async fn query_pointing_stats_by_zone(&self, device_id: &str, hou
+rs: u32) -> Result<Value, Box<dyn Error + Send + Sync>> {
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `validation_rules` is never used
+  --> src\dtu_receiver.rs:93:12
+   |
+13 | impl DtuReceiver {
+   | ---------------- method in this implementation
+...
+93 |     pub fn validation_rules(&self) -> &crate::models::ValidationRanges {
+   |            ^^^^^^^^^^^^^^^^
+
+warning: static `HTTP_REQUESTS_TOTAL` is never used
+ --> src\metrics.rs:7:12
+  |
+7 | pub static HTTP_REQUESTS_TOTAL: Lazy<IntCounterVec> = Lazy::new(|| {
+  |            ^^^^^^^^^^^^^^^^^^^
+
+warning: static `HTTP_REQUEST_DURATION` is never used
+  --> src\metrics.rs:16:12
+   |
+16 | pub static HTTP_REQUEST_DURATION: Lazy<HistogramVec> = Lazy::new(|| {
+   |            ^^^^^^^^^^^^^^^^^^^^^
+
+warning: static `CHANNEL_QUEUE_SIZE` is never used
+   --> src\metrics.rs:105:12
+    |
+105 | pub static CHANNEL_QUEUE_SIZE: Lazy<IntGauge> = Lazy::new(|| {
+    |            ^^^^^^^^^^^^^^^^^^
+
+warning: function `gather` is never used
+   --> src\metrics.rs:113:8
+    |
+113 | pub fn gather() -> Vec<prometheus::proto::MetricFamily> {
+    |        ^^^^^^
+
+warning: variant `Channel` is never constructed
+  --> src\models.rs:20:5
+   |
+14 | pub enum HunyiError {
+   |          ---------- variant in this enum
+...
+20 |     Channel(String),
+   |     ^^^^^^^
+   |
+   = note: `HunyiError` has a derived impl for the trait `Debug`, but this is i
+ntentionally ignored during dead code analysis
+
+warning: fields `hertz_k_n_m15`, `restitution_coeff`, `damping_ratio`, `tooth_e
+quiv_mass_kg`, `contact_iterations`, and `contact_dt_s` are never read
+   --> src\models.rs:186:9
+    |
+185 | pub struct GearMaterialParams {
+    |            ------------------ fields in this struct
+186 |     pub hertz_k_n_m15: f64,
+    |         ^^^^^^^^^^^^^
+187 |     pub restitution_coeff: f64,
+    |         ^^^^^^^^^^^^^^^^^
+188 |     pub damping_ratio: f64,
+    |         ^^^^^^^^^^^^^
+189 |     pub tooth_equiv_mass_kg: f64,
+    |         ^^^^^^^^^^^^^^^^^^^
+190 |     pub contact_iterations: usize,
+    |         ^^^^^^^^^^^^^^^^^^
+191 |     pub contact_dt_s: f64,
+    |         ^^^^^^^^^^^^
+    |
+    = note: `GearMaterialParams` has derived impls for the traits `Clone` and `
+Debug`, but these are intentionally ignored during dead code analysis
+
+warning: field `gear_material` is never read
+   --> src\models.rs:220:9
+    |
+218 | pub struct GearParamsConfig {
+    |            ---------------- field in this struct
+219 |     pub shaft: ShaftParams,
+220 |     pub gear_material: GearMaterialParams,
+    |         ^^^^^^^^^^^^^
+    |
+    = note: `GearParamsConfig` has derived impls for the traits `Clone` and `De
+bug`, but these are intentionally ignored during dead code analysis
+
+warning: variants `AlarmTriggered` and `AllComputed` are never constructed
+   --> src\models.rs:271:5
+    |
+267 | pub enum PipelineMessage {
+    |          --------------- variants in this enum
+...
+271 |     AlarmTriggered(Arc<AlarmEvent>),
+    |     ^^^^^^^^^^^^^^
+272 |     AllComputed(Arc<SensorReading>, Vec<Arc<TransmissionErrorResult>>, Ar
+c<PointingAccuracyResult>),
+    |     ^^^^^^^^^^^
+    |
+    = note: `PipelineMessage` has derived impls for the traits `Clone` and `Deb
+ug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `torsion_stiffness`, `bending_stiffness`, and `mass_moment` are
+ never read
+  --> src\pointing_analyzer.rs:14:5
+   |
+13 | struct FlexibleAxisParams {
+   |        ------------------ fields in this struct
+14 |     torsion_stiffness: f64,
+   |     ^^^^^^^^^^^^^^^^^
+15 |     bending_stiffness: f64,
+   |     ^^^^^^^^^^^^^^^^^
+...
+18 |     mass_moment: f64,
+   |     ^^^^^^^^^^^
+
+warning: function `analyze_pointing` is never used
+   --> src\pointing_analyzer.rs:222:8
+    |
+222 | pub fn analyze_pointing(reading: &SensorReading) -> PointingAccuracyResul
+t {
+    |        ^^^^^^^^^^^^^^^^
+
+warning: constant `ARCMIN_TO_RAD` is never used
+  --> src\transmission_simulator.rs:14:7
+   |
+14 | const ARCMIN_TO_RAD: f64 = std::f64::consts::PI / (180.0 * 60.0);
+   |       ^^^^^^^^^^^^^
+
+warning: methods `material`, `hertz_contact_force`, and `simulate_backlash_coll
+ision` are never used
+  --> src\transmission_simulator.rs:47:8
+   |
+24 | impl TransmissionSimulator {
+   | -------------------------- methods in this implementation
+...
+47 |     fn material(&self) -> &GearMaterialParams {
+   |        ^^^^^^^^
+...
+55 |     fn hertz_contact_force(&self, delta: f64, delta_dot: f64, wear_level: 
+f64) -> (f64, f64, f64) {
+   |        ^^^^^^^^^^^^^^^^^^^
+...
+78 |     pub fn simulate_backlash_collision(
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `hunyi-backend` (bin "hunyi-backend" test) generated 23 warnings (run 
+`cargo fix --bin "hunyi-backend" -p hunyi-backend --tests` to apply 7 suggestio
+ns)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.33s
+     Running unittests src\main.rs (target\debug\deps\hunyi_backend-ccd1fcc0ae4
+65651.exe)
+
+running 65 tests
+test degradation_sim::tests::boundary_cases::test_high_wear_rate_clamps_at_99 ... FAILED
+test degradation_sim::tests::boundary_cases::test_low_elevation_high_etc ... FAILED
+test degradation_sim::tests::boundary_cases::test_one_step_two_points ... FAILED
+test degradation_sim::tests::boundary_cases::test_zero_hours_one_point ... FAILED
+test degradation_sim::tests::boundary_cases::test_zero_wear_rate_stable ... FAILED
+test degradation_sim::tests::error_cases::test_invalid_instrument_returns_error ... ok
+test degradation_sim::tests::error_cases::test_modern_eq_degrades_slower ... FAILED
+test degradation_sim::tests::error_cases::test_negative_steps_clamped ... FAILED
+test degradation_sim::tests::error_components::test_all_components_positive ... FAILED
+test degradation_sim::tests::error_components::test_wear_error_component_grows ... FAILED
+test degradation_sim::tests::normal_cases::test_cumulative_error_increases_with_wear ... FAILED
+test degradation_sim::tests::normal_cases::test_data_points_monotonic_wear ... FAILED
+test degradation_sim::tests::normal_cases::test_degradation_basic_structure ... FAILED
+test degradation_sim::tests::normal_cases::test_elapsed_hours_linear_progress ... FAILED
+test degradation_sim::tests::normal_cases::test_etc_increases_with_wear ... FAILED
+test degradation_sim::tests::normal_cases::test_wear_starts_at_initial ... FAILED
+test instrument_comparison::tests::comparison_run::test_all_four_instruments ... FAILED
+test instrument_comparison::tests::comparison_run::test_boundary_90_elevation ... FAILED
+test instrument_comparison::tests::comparison_run::test_boundary_full_wear ... FAILED
+test instrument_comparison::tests::comparison_run::test_boundary_zero_azimuth ... FAILED
+test instrument_comparison::tests::comparison_run::test_cross_era_comparison ... FAILED
+test instrument_comparison::tests::comparison_run::test_empty_instruments ... ok
+test instrument_comparison::tests::comparison_run::test_error_components_positive ... FAILED
+test instrument_comparison::tests::comparison_run::test_invalid_instrument_returns_error ... ok
+test instrument_comparison::tests::comparison_run::test_result_consistency_same_input ... FAILED
+test instrument_comparison::tests::comparison_run::test_single_instrument_comparison ... FAILED
+test instrument_comparison::tests::comparison_run::test_temperature_effect ... FAILED
+test instrument_comparison::tests::comparison_run::test_two_ancient_instruments ... FAILED
+test instrument_comparison::tests::comparison_run::test_wear_increases_error ... FAILED
+test instrument_comparison::tests::config_loading::test_load_hunyi_config ... FAILED
+test instrument_comparison::tests::config_loading::test_load_jianyi_config ... FAILED
+test instrument_comparison::tests::config_loading::test_load_modern_eq_config ... FAILED
+test instrument_comparison::tests::config_loading::test_load_xiangyiyi_config ... FAILED
+test instrument_comparison::tests::instrument_type_parsing::test_parse_case_insensitive ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_chinese_name_alias ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_hunyi_normal ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_jianyi_normal ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_modern_eq_normal ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_unknown_returns_none ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_xiangyiyi_normal ... ok
+test virtual_op::tests::boundary_cases::test_360_azimuth_boundary ... FAILED
+test virtual_op::tests::boundary_cases::test_90_elevation_boundary ... FAILED
+test virtual_op::tests::boundary_cases::test_full_wear_boundary ... FAILED
+test virtual_op::tests::boundary_cases::test_high_temperature ... FAILED
+test virtual_op::tests::boundary_cases::test_negative_temperature ... FAILED
+test virtual_op::tests::boundary_cases::test_pointing_at_north_polar_zone ... FAILED
+test virtual_op::tests::boundary_cases::test_zero_azimuth_boundary ... FAILED
+test virtual_op::tests::boundary_cases::test_zero_elevation_boundary ... FAILED
+test virtual_op::tests::boundary_cases::test_zero_wear_boundary ... FAILED
+test virtual_op::tests::error_cases::test_extreme_angles_no_panic ... FAILED
+test virtual_op::tests::error_cases::test_invalid_instrument_returns_error ... ok
+test virtual_op::tests::instrument_comparison::test_modern_eq_lower_error ... FAILED
+test virtual_op::tests::instrument_comparison::test_wear_increases_error ... FAILED
+test virtual_op::tests::normal_cases::test_sky_zone_valid_values ... FAILED
+test virtual_op::tests::normal_cases::test_star_names_not_empty ... FAILED
+test virtual_op::tests::normal_cases::test_virtual_rotation_basic ... FAILED
+test virtual_op::tests::normal_cases::test_visible_stars_near_polaris ... FAILED
+test virtual_op::tests::normal_cases::test_visible_stars_sorted_by_distance ... FAILED
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_non_negative ... ok
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_opposite_points ... ok
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_same_point ... ok
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_symmetric ... ok
+test virtual_op::tests::virtual_operation_intuitiveness::test_all_four_instruments_work ... FAILED
+test virtual_op::tests::virtual_operation_intuitiveness::test_azimuth_changes_pointing ... FAILED
+test virtual_op::tests::virtual_operation_intuitiveness::test_elevation_changes_declination ... FAILED
+
+failures:
+
+---- degradation_sim::tests::boundary_cases::test_high_wear_rate_clamps_at_99 stdout ----
+
+thread 'degradation_sim::tests::boundary_cases::test_high_wear_rate_clamps_at_99' (22784) panicked at src\degradation_sim.rs:243:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- degradation_sim::tests::boundary_cases::test_low_elevation_high_etc stdout ----
+
+thread 'degradation_sim::tests::boundary_cases::test_low_elevation_high_etc' (30876) panicked at src\degradation_sim.rs:255:76:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::boundary_cases::test_one_step_two_points stdout ----
+
+thread 'degradation_sim::tests::boundary_cases::test_one_step_two_points' (24244) panicked at src\degradation_sim.rs:218:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::boundary_cases::test_zero_hours_one_point stdout ----
+
+thread 'degradation_sim::tests::boundary_cases::test_zero_hours_one_point' (3624) panicked at src\degradation_sim.rs:208:13:
+assertion failed: result.is_ok()
+
+---- degradation_sim::tests::boundary_cases::test_zero_wear_rate_stable stdout ----
+
+thread 'degradation_sim::tests::boundary_cases::test_zero_wear_rate_stable' (22844) panicked at src\degradation_sim.rs:228:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::error_cases::test_modern_eq_degrades_slower stdout ----
+
+thread 'degradation_sim::tests::error_cases::test_modern_eq_degrades_slower' (14936) panicked at src\degradation_sim.rs:311:77:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::error_cases::test_negative_steps_clamped stdout ----
+
+thread 'degradation_sim::tests::error_cases::test_negative_steps_clamped' (14364) panicked at src\degradation_sim.rs:284:13:
+assertion failed: result.is_ok()
+
+---- degradation_sim::tests::error_components::test_all_components_positive stdout ----
+
+thread 'degradation_sim::tests::error_components::test_all_components_positive' (21064) panicked at src\degradation_sim.rs:328:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::error_components::test_wear_error_component_grows stdout ----
+
+thread 'degradation_sim::tests::error_components::test_wear_error_component_grows' (6148) panicked at src\degradation_sim.rs:343:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::normal_cases::test_cumulative_error_increases_with_wear stdout ----
+
+thread 'degradation_sim::tests::normal_cases::test_cumulative_error_increases_with_wear' (20948) panicked at src\degradation_sim.rs:164:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::normal_cases::test_data_points_monotonic_wear stdout ----
+
+thread 'degradation_sim::tests::normal_cases::test_data_points_monotonic_wear' (29912) panicked at src\degradation_sim.rs:139:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::normal_cases::test_degradation_basic_structure stdout ----
+
+thread 'degradation_sim::tests::normal_cases::test_degradation_basic_structure' (10008) panicked at src\degradation_sim.rs:128:13:
+閫€鍖栦豢鐪熷簲鎴愬姛
+
+---- degradation_sim::tests::normal_cases::test_elapsed_hours_linear_progress stdout ----
+
+thread 'degradation_sim::tests::normal_cases::test_elapsed_hours_linear_progress' (3180) panicked at src\degradation_sim.rs:190:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::normal_cases::test_etc_increases_with_wear stdout ----
+
+thread 'degradation_sim::tests::normal_cases::test_etc_increases_with_wear' (14644) panicked at src\degradation_sim.rs:176:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- degradation_sim::tests::normal_cases::test_wear_starts_at_initial stdout ----
+
+thread 'degradation_sim::tests::normal_cases::test_wear_starts_at_initial' (4832) panicked at src\degradation_sim.rs:155:68:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- instrument_comparison::tests::comparison_run::test_all_four_instruments stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_all_four_instruments' (11864) panicked at src\instrument_comparison.rs:271:13:
+assertion failed: result.is_ok()
+
+---- instrument_comparison::tests::comparison_run::test_boundary_90_elevation stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_boundary_90_elevation' (32624) panicked at src\instrument_comparison.rs:369:13:
+90掳楂樺害瑙掕竟鐣屽簲姝ｅ父
+
+---- instrument_comparison::tests::comparison_run::test_boundary_full_wear stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_boundary_full_wear' (13568) panicked at src\instrument_comparison.rs:377:13:
+100%纾ㄦ崯杈圭晫搴旀甯?
+---- instrument_comparison::tests::comparison_run::test_boundary_zero_azimuth stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_boundary_zero_azimuth' (33260) panicked at src\instrument_comparison.rs:361:13:
+0掳鏂逛綅瑙掕竟鐣屽簲姝ｅ父
+
+---- instrument_comparison::tests::comparison_run::test_cross_era_comparison stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_cross_era_comparison' (27832) panicked at src\instrument_comparison.rs:251:13:
+assertion failed: result.is_ok()
+
+---- instrument_comparison::tests::comparison_run::test_error_components_positive stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_error_components_positive' (27276) panicked at src\instrument_comparison.rs:335:67:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- instrument_comparison::tests::comparison_run::test_result_consistency_same_input stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_result_consistency_same_input' (7676) panicked at src\instrument_comparison.rs:346:63:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- instrument_comparison::tests::comparison_run::test_single_instrument_comparison stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_single_instrument_comparison' (33532) panicked at src\instrument_comparison.rs:230:13:
+assertion failed: result.is_ok()
+
+---- instrument_comparison::tests::comparison_run::test_temperature_effect stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_temperature_effect' (19052) panicked at src\instrument_comparison.rs:320:77:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- instrument_comparison::tests::comparison_run::test_two_ancient_instruments stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_two_ancient_instruments' (31892) panicked at src\instrument_comparison.rs:240:13:
+assertion failed: result.is_ok()
+
+---- instrument_comparison::tests::comparison_run::test_wear_increases_error stdout ----
+
+thread 'instrument_comparison::tests::comparison_run::test_wear_increases_error' (30960) panicked at src\instrument_comparison.rs:303:75:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- instrument_comparison::tests::config_loading::test_load_hunyi_config stdout ----
+
+thread 'instrument_comparison::tests::config_loading::test_load_hunyi_config' (30808) panicked at src\instrument_comparison.rs:176:13:
+娴戜华閰嶇疆鍔犺浇澶辫触: Some(Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9"))
+
+---- instrument_comparison::tests::config_loading::test_load_jianyi_config stdout ----
+
+thread 'instrument_comparison::tests::config_loading::test_load_jianyi_config' (9472) panicked at src\instrument_comparison.rs:186:13:
+绠€浠厤缃姞杞藉け璐?
+---- instrument_comparison::tests::config_loading::test_load_modern_eq_config stdout ----
+
+thread 'instrument_comparison::tests::config_loading::test_load_modern_eq_config' (2152) panicked at src\instrument_comparison.rs:205:13:
+鐜颁唬璧ら亾浠厤缃姞杞藉け璐?
+---- instrument_comparison::tests::config_loading::test_load_xiangyiyi_config stdout ----
+
+thread 'instrument_comparison::tests::config_loading::test_load_xiangyiyi_config' (31704) panicked at src\instrument_comparison.rs:196:13:
+璞￠檺浠厤缃姞杞藉け璐?
+---- virtual_op::tests::boundary_cases::test_360_azimuth_boundary stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_360_azimuth_boundary' (18060) panicked at src\virtual_op.rs:238:13:
+360掳鏂逛綅瑙掑簲姝ｅ父
+
+---- virtual_op::tests::boundary_cases::test_90_elevation_boundary stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_90_elevation_boundary' (12764) panicked at src\virtual_op.rs:254:13:
+90掳楂樺害瑙掑簲姝ｅ父
+
+---- virtual_op::tests::boundary_cases::test_full_wear_boundary stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_full_wear_boundary' (14904) panicked at src\virtual_op.rs:271:13:
+100%纾ㄦ崯搴旀甯?
+---- virtual_op::tests::boundary_cases::test_high_temperature stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_high_temperature' (19704) panicked at src\virtual_op.rs:287:13:
+楂樻俯搴旀甯?
+---- virtual_op::tests::boundary_cases::test_negative_temperature stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_negative_temperature' (2356) panicked at src\virtual_op.rs:279:13:
+闆朵笅娓╁害搴旀甯?
+---- virtual_op::tests::boundary_cases::test_pointing_at_north_polar_zone stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_pointing_at_north_polar_zone' (31872) panicked at src\virtual_op.rs:295:73:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::boundary_cases::test_zero_azimuth_boundary stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_zero_azimuth_boundary' (9100) panicked at src\virtual_op.rs:230:13:
+0掳鏂逛綅瑙掑簲姝ｅ父
+
+---- virtual_op::tests::boundary_cases::test_zero_elevation_boundary stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_zero_elevation_boundary' (28680) panicked at src\virtual_op.rs:246:13:
+0掳楂樺害瑙掑簲姝ｅ父
+
+---- virtual_op::tests::boundary_cases::test_zero_wear_boundary stdout ----
+
+thread 'virtual_op::tests::boundary_cases::test_zero_wear_boundary' (21004) panicked at src\virtual_op.rs:262:13:
+闆剁（鎹熷簲姝ｅ父
+
+---- virtual_op::tests::error_cases::test_extreme_angles_no_panic stdout ----
+
+thread 'virtual_op::tests::error_cases::test_extreme_angles_no_panic' (9440) panicked at src\virtual_op.rs:317:13:
+鏋佺瑙掑害涓嶅簲panic
+
+---- virtual_op::tests::instrument_comparison::test_modern_eq_lower_error stdout ----
+
+thread 'virtual_op::tests::instrument_comparison::test_modern_eq_lower_error' (22812) panicked at src\virtual_op.rs:328:82:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::instrument_comparison::test_wear_increases_error stdout ----
+
+thread 'virtual_op::tests::instrument_comparison::test_wear_increases_error' (22680) panicked at src\virtual_op.rs:345:74:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::normal_cases::test_sky_zone_valid_values stdout ----
+
+thread 'virtual_op::tests::normal_cases::test_sky_zone_valid_values' (18192) panicked at src\virtual_op.rs:215:77:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::normal_cases::test_star_names_not_empty stdout ----
+
+thread 'virtual_op::tests::normal_cases::test_star_names_not_empty' (21676) panicked at src\virtual_op.rs:200:73:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::normal_cases::test_virtual_rotation_basic stdout ----
+
+thread 'virtual_op::tests::normal_cases::test_virtual_rotation_basic' (4336) panicked at src\virtual_op.rs:164:13:
+铏氭嫙鏃嬭浆搴旀垚鍔?
+---- virtual_op::tests::normal_cases::test_visible_stars_near_polaris stdout ----
+
+thread 'virtual_op::tests::normal_cases::test_visible_stars_near_polaris' (10176) panicked at src\virtual_op.rs:179:73:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::normal_cases::test_visible_stars_sorted_by_distance stdout ----
+
+thread 'virtual_op::tests::normal_cases::test_visible_stars_sorted_by_distance' (33600) panicked at src\virtual_op.rs:189:73:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::virtual_operation_intuitiveness::test_all_four_instruments_work stdout ----
+
+thread 'virtual_op::tests::virtual_operation_intuitiveness::test_all_four_instruments_work' (480) panicked at src\virtual_op.rs:425:17:
+hunyi 铏氭嫙鎿嶄綔搴旀甯?
+---- virtual_op::tests::virtual_operation_intuitiveness::test_azimuth_changes_pointing stdout ----
+
+thread 'virtual_op::tests::virtual_operation_intuitiveness::test_azimuth_changes_pointing' (16308) panicked at src\virtual_op.rs:394:70:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+---- virtual_op::tests::virtual_operation_intuitiveness::test_elevation_changes_declination stdout ----
+
+thread 'virtual_op::tests::virtual_operation_intuitiveness::test_elevation_changes_declination' (23788) panicked at src\virtual_op.rs:408:70:
+called `Result::unwrap()` on an `Err` value: Config("D:\\SOLO-2\\AI_solo_coder_task_B_146\\backend/config\\gear_params.json parse error: missing field `backlash` at line 43 column 9")
+
+
+failures:
+    degradation_sim::tests::boundary_cases::test_high_wear_rate_clamps_at_99
+    degradation_sim::tests::boundary_cases::test_low_elevation_high_etc
+    degradation_sim::tests::boundary_cases::test_one_step_two_points
+    degradation_sim::tests::boundary_cases::test_zero_hours_one_point
+    degradation_sim::tests::boundary_cases::test_zero_wear_rate_stable
+    degradation_sim::tests::error_cases::test_modern_eq_degrades_slower
+    degradation_sim::tests::error_cases::test_negative_steps_clamped
+    degradation_sim::tests::error_components::test_all_components_positive
+    degradation_sim::tests::error_components::test_wear_error_component_grows
+    degradation_sim::tests::normal_cases::test_cumulative_error_increases_with_wear
+    degradation_sim::tests::normal_cases::test_data_points_monotonic_wear
+    degradation_sim::tests::normal_cases::test_degradation_basic_structure
+    degradation_sim::tests::normal_cases::test_elapsed_hours_linear_progress
+    degradation_sim::tests::normal_cases::test_etc_increases_with_wear
+    degradation_sim::tests::normal_cases::test_wear_starts_at_initial
+    instrument_comparison::tests::comparison_run::test_all_four_instruments
+    instrument_comparison::tests::comparison_run::test_boundary_90_elevation
+    instrument_comparison::tests::comparison_run::test_boundary_full_wear
+    instrument_comparison::tests::comparison_run::test_boundary_zero_azimuth
+    instrument_comparison::tests::comparison_run::test_cross_era_comparison
+    instrument_comparison::tests::comparison_run::test_error_components_positive
+    instrument_comparison::tests::comparison_run::test_result_consistency_same_input
+    instrument_comparison::tests::comparison_run::test_single_instrument_comparison
+    instrument_comparison::tests::comparison_run::test_temperature_effect
+    instrument_comparison::tests::comparison_run::test_two_ancient_instruments
+    instrument_comparison::tests::comparison_run::test_wear_increases_error
+    instrument_comparison::tests::config_loading::test_load_hunyi_config
+    instrument_comparison::tests::config_loading::test_load_jianyi_config
+    instrument_comparison::tests::config_loading::test_load_modern_eq_config
+    instrument_comparison::tests::config_loading::test_load_xiangyiyi_config
+    virtual_op::tests::boundary_cases::test_360_azimuth_boundary
+    virtual_op::tests::boundary_cases::test_90_elevation_boundary
+    virtual_op::tests::boundary_cases::test_full_wear_boundary
+    virtual_op::tests::boundary_cases::test_high_temperature
+    virtual_op::tests::boundary_cases::test_negative_temperature
+    virtual_op::tests::boundary_cases::test_pointing_at_north_polar_zone
+    virtual_op::tests::boundary_cases::test_zero_azimuth_boundary
+    virtual_op::tests::boundary_cases::test_zero_elevation_boundary
+    virtual_op::tests::boundary_cases::test_zero_wear_boundary
+    virtual_op::tests::error_cases::test_extreme_angles_no_panic
+    virtual_op::tests::instrument_comparison::test_modern_eq_lower_error
+    virtual_op::tests::instrument_comparison::test_wear_increases_error
+    virtual_op::tests::normal_cases::test_sky_zone_valid_values
+    virtual_op::tests::normal_cases::test_star_names_not_empty
+    virtual_op::tests::normal_cases::test_virtual_rotation_basic
+    virtual_op::tests::normal_cases::test_visible_stars_near_polaris
+    virtual_op::tests::normal_cases::test_visible_stars_sorted_by_distance
+    virtual_op::tests::virtual_operation_intuitiveness::test_all_four_instruments_work
+    virtual_op::tests::virtual_operation_intuitiveness::test_azimuth_changes_pointing
+    virtual_op::tests::virtual_operation_intuitiveness::test_elevation_changes_declination
+
+test result: FAILED. 15 passed; 50 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `--bin hunyi-backend`

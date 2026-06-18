@@ -141,9 +141,12 @@ pub struct GearStage {
     pub teeth_input: u32,
     pub teeth_output: u32,
     pub theoretical_ratio: f64,
+    #[serde(alias = "backlash_arcmin")]
     pub backlash: f64,
+    #[serde(alias = "base_meshing_error_arcmin")]
     pub base_meshing_error: f64,
     pub wear_factor: f64,
+    #[serde(alias = "elastic_stiffness_nm")]
     pub elastic_stiffness: f64,
 }
 
@@ -152,6 +155,7 @@ pub struct AxisConfig {
     pub axis_id: u8,
     pub axis_name: String,
     pub gear_stages: Vec<GearStage>,
+    #[serde(alias = "bearing_clearance_arcmin")]
     pub bearing_clearance: f64,
     pub thermal_expansion_coeff: f64,
 }

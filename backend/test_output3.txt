@@ -1,0 +1,113 @@
+﻿cargo :    Compiling hunyi-backend v0.1.0 (D:\SOLO-2\AI_solo_coder_task_B_146\b
+ackend)
+所在位置 行:1 字符: 88
++ ... d d:\SOLO-2\AI_solo_coder_task_B_146\backend; cargo test 2>&1 | Out-F ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling hu..._B_146\backend) 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: unused import: `debug`
+  --> src\alarm_ws.rs:12:34
+   |
+12 | use tracing::{error, info, warn, debug};
+   |                                  ^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `info`
+ --> src\dtu_receiver.rs:5:29
+  |
+5 | use tracing::{debug, error, info, warn};
+  |                             ^^^^
+
+warning: unused import: `debug`
+ --> src\pointing_analyzer.rs:8:34
+  |
+8 | use tracing::{error, info, warn, debug};
+  |                                  ^^^^^
+
+warning: unused import: `debug`
+  --> src\transmission_simulator.rs:11:34
+   |
+11 | use tracing::{error, info, warn, debug};
+   |                                  ^^^^^
+
+error[E0600]: cannot apply unary operator `-` to type `u32`
+   --> src\degradation_sim.rs:294:25
+    |
+294 |             req.steps = -5;
+    |                         ^^ cannot apply unary operator `-`
+    |
+    = note: unsigned values cannot be negated
+
+error[E0609]: no field `instrument` on type `InstrumentComparisonResult`
+   --> src\instrument_comparison.rs:359:38
+    |
+359 |             assert_eq!(r1.results[0].instrument, r2.results[0].instrument
+,
+    |                                      ^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `instrument_type`, `instrument_name`, `era`, 
+`transmission_results`, `cumulative_error` ... and 5 others
+
+error[E0609]: no field `instrument` on type `InstrumentComparisonResult`
+   --> src\instrument_comparison.rs:359:64
+    |
+359 |             assert_eq!(r1.results[0].instrument, r2.results[0].instrument
+,
+    |                                                                ^^^^^^^^^^
+ unknown field
+    |
+    = note: available fields are: `instrument_type`, `instrument_name`, `era`, 
+`transmission_results`, `cumulative_error` ... and 5 others
+
+warning: variable does not need to be mutable
+  --> src\alarm_ws.rs:39:13
+   |
+39 |         let mut last = self.last_alarm_times.lock();
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable `total_temp` is assigned to, but never used
+  --> src\degradation_sim.rs:49:13
+   |
+49 |         let mut total_temp = 0.0;
+   |             ^^^^^^^^^^^^^^
+   |
+   = note: consider using `_total_temp` instead
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by defaul
+t
+
+warning: value assigned to `total_temp` is never read
+  --> src\degradation_sim.rs:69:13
+   |
+69 |             total_temp += r.temperature_effect;
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by defa
+ult
+
+warning: unused variable: `az_rad`
+   --> src\pointing_analyzer.rs:103:13
+    |
+103 |         let az_rad = az * DEG_TO_RAD;
+    |             ^^^^^^ help: if this is intentional, prefix it with an unders
+core: `_az_rad`
+
+warning: unused variable: `flex`
+   --> src\pointing_analyzer.rs:165:13
+    |
+165 |         let flex = Self::tube_flexure(t_el, 0.08);
+    |             ^^^^ help: if this is intentional, prefix it with an undersco
+re: `_flex`
+
+Some errors have detailed explanations: E0600, E0609.
+For more information about an error, try `rustc --explain E0600`.
+warning: `hunyi-backend` (bin "hunyi-backend" test) generated 9 warnings
+error: could not compile `hunyi-backend` (bin "hunyi-backend" test) due to 3 pr
+evious errors; 9 warnings emitted

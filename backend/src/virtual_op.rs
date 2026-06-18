@@ -133,3 +133,299 @@ pub fn run_virtual_rotation(
         sky_zone,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::models::VirtualRotationRequest;
+
+    fn test_config_dir() -> std::path::PathBuf {
+        std::path::PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/config"))
+    }
+
+    fn default_req() -> VirtualRotationRequest {
+        VirtualRotationRequest {
+            azimuth_angle: 45.0,
+            elevation_angle: 60.0,
+            equatorial_angle: 30.0,
+            instrument: "hunyi".to_string(),
+            wear_level: 0.1,
+            temperature: 20.0,
+        }
+    }
+
+    mod normal_cases {
+        use super::*;
+
+        #[test]
+        fn test_virtual_rotation_basic() {
+            let req = default_req();
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "虚拟旋转应成功");
+            let result = result.unwrap();
+            assert!(result.pointing_ra.is_finite());
+            assert!(result.pointing_dec.is_finite());
+            assert!(result.transmission_error > 0.0);
+            assert!(result.pointing_error > 0.0);
+            assert!(result.error_transfer_coefficient > 0.0);
+            assert!(!result.sky_zone.is_empty());
+        }
+
+        #[test]
+        fn test_visible_stars_near_polaris() {
+            let mut req = default_req();
+            req.equatorial_angle = 37.95;
+            req.elevation_angle = 89.26;
+            let result = run_virtual_rotation(&req, &test_config_dir()).unwrap();
+            let polaris = result.visible_stars.iter().find(|s| s.name == "北极星");
+            assert!(polaris.is_some(), "指向北极星方向应能看到北极星");
+            assert!(polaris.unwrap().angular_distance_arcmin < 180.0,
+                    "北极星角距离应较近");
+        }
+
+        #[test]
+        fn test_visible_stars_sorted_by_distance() {
+            let req = default_req();
+            let result = run_virtual_rotation(&req, &test_config_dir()).unwrap();
+            let stars = &result.visible_stars;
+            for i in 1..stars.len() {
+                assert!(stars[i].angular_distance_arcmin >= stars[i-1].angular_distance_arcmin - 1e-9,
+                        "星体应按角距离递增排列");
+            }
+        }
+
+        #[test]
+        fn test_star_names_not_empty() {
+            let req = default_req();
+            let result = run_virtual_rotation(&req, &test_config_dir()).unwrap();
+            for star in &result.visible_stars {
+                assert!(!star.name.is_empty(), "星名不应为空");
+                assert!(!star.constellation.is_empty(), "星座名不应为空");
+            }
+        }
+
+        #[test]
+        fn test_sky_zone_valid_values() {
+            let valid_zones = vec![
+                "北天极", "北天区", "赤道带", "黄道带", "南天区", "南天极"
+            ];
+            let mut req = default_req();
+            for &dec in &[-70.0, -30.0, 0.0, 30.0, 70.0] {
+                req.elevation_angle = dec;
+                let result = run_virtual_rotation(&req, &test_config_dir()).unwrap();
+                assert!(valid_zones.iter().any(|z| *z == result.sky_zone),
+                        "天区名称应有效: {}", result.sky_zone);
+            }
+        }
+    }
+
+    mod boundary_cases {
+        use super::*;
+
+        #[test]
+        fn test_zero_azimuth_boundary() {
+            let mut req = default_req();
+            req.azimuth_angle = 0.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "0°方位角应正常");
+        }
+
+        #[test]
+        fn test_360_azimuth_boundary() {
+            let mut req = default_req();
+            req.azimuth_angle = 360.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "360°方位角应正常");
+        }
+
+        #[test]
+        fn test_zero_elevation_boundary() {
+            let mut req = default_req();
+            req.elevation_angle = 0.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "0°高度角应正常");
+        }
+
+        #[test]
+        fn test_90_elevation_boundary() {
+            let mut req = default_req();
+            req.elevation_angle = 90.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "90°高度角应正常");
+        }
+
+        #[test]
+        fn test_zero_wear_boundary() {
+            let mut req = default_req();
+            req.wear_level = 0.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "零磨损应正常");
+            assert!(result.unwrap().transmission_error > 0.0);
+        }
+
+        #[test]
+        fn test_full_wear_boundary() {
+            let mut req = default_req();
+            req.wear_level = 1.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "100%磨损应正常");
+        }
+
+        #[test]
+        fn test_negative_temperature() {
+            let mut req = default_req();
+            req.temperature = -30.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "零下温度应正常");
+        }
+
+        #[test]
+        fn test_high_temperature() {
+            let mut req = default_req();
+            req.temperature = 60.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "高温应正常");
+        }
+
+        #[test]
+        fn test_pointing_at_north_polar_zone() {
+            let mut req = default_req();
+            req.equatorial_angle = 0.0;
+            req.elevation_angle = 85.0;
+            let result = run_virtual_rotation(&req, &test_config_dir()).unwrap();
+            assert_eq!(result.sky_zone, "北天极");
+        }
+    }
+
+    mod error_cases {
+        use super::*;
+
+        #[test]
+        fn test_invalid_instrument_returns_error() {
+            let mut req = default_req();
+            req.instrument = "invalid".to_string();
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_err(), "无效仪器应返回错误");
+        }
+
+        #[test]
+        fn test_extreme_angles_no_panic() {
+            let mut req = default_req();
+            req.azimuth_angle = 9999.0;
+            req.elevation_angle = -9999.0;
+            let result = run_virtual_rotation(&req, &test_config_dir());
+            assert!(result.is_ok(), "极端角度不应panic");
+        }
+    }
+
+    mod instrument_comparison {
+        use super::*;
+
+        #[test]
+        fn test_modern_eq_lower_error() {
+            let mut req_ancient = default_req();
+            req_ancient.instrument = "hunyi".to_string();
+            let ancient = run_virtual_rotation(&req_ancient, &test_config_dir()).unwrap();
+
+            let mut req_modern = default_req();
+            req_modern.instrument = "modern_eq".to_string();
+            let modern = run_virtual_rotation(&req_modern, &test_config_dir()).unwrap();
+
+            assert!(
+                modern.transmission_error < ancient.transmission_error,
+                "现代赤道仪传动误差应小于浑仪: 现代={} < 古代={}",
+                modern.transmission_error, ancient.transmission_error
+            );
+        }
+
+        #[test]
+        fn test_wear_increases_error() {
+            let mut req_low = default_req();
+            req_low.wear_level = 0.01;
+            let low = run_virtual_rotation(&req_low, &test_config_dir()).unwrap();
+
+            let mut req_high = default_req();
+            req_high.wear_level = 0.9;
+            let high = run_virtual_rotation(&req_high, &test_config_dir()).unwrap();
+
+            assert!(high.transmission_error > low.transmission_error,
+                    "高磨损应导致更高传动误差");
+            assert!(high.error_transfer_coefficient >= low.error_transfer_coefficient - 1e-9,
+                    "高磨损ETC不低于低磨损");
+        }
+    }
+
+    mod star_catalog_integrity {
+        use super::*;
+
+        #[test]
+        fn test_angular_distance_non_negative() {
+            let d = angular_distance(0.0, 0.0, 1.0, 1.0);
+            assert!(d >= 0.0, "角距离非负");
+        }
+
+        #[test]
+        fn test_angular_distance_same_point() {
+            let d = angular_distance(45.0, 30.0, 45.0, 30.0);
+            assert!(d.abs() < 1e-6, "同一点角距离为0: {}", d);
+        }
+
+        #[test]
+        fn test_angular_distance_symmetric() {
+            let d1 = angular_distance(10.0, 20.0, 30.0, 40.0);
+            let d2 = angular_distance(30.0, 40.0, 10.0, 20.0);
+            assert!((d1 - d2).abs() < 1e-6, "角距离对称");
+        }
+
+        #[test]
+        fn test_angular_distance_opposite_points() {
+            let d = angular_distance(0.0, 0.0, 180.0, 0.0);
+            assert!((d - 10800.0).abs() < 100.0, "对径点约180°=10800角分: {}", d);
+        }
+    }
+
+    mod virtual_operation_intuitiveness {
+        use super::*;
+
+        #[test]
+        fn test_azimuth_changes_pointing() {
+            let mut req1 = default_req();
+            req1.azimuth_angle = 0.0;
+            let r1 = run_virtual_rotation(&req1, &test_config_dir()).unwrap();
+
+            let mut req2 = default_req();
+            req2.azimuth_angle = 90.0;
+            let r2 = run_virtual_rotation(&req2, &test_config_dir()).unwrap();
+
+            assert!(r1.pointing_ra != r2.pointing_ra,
+                    "方位角变化应导致指向赤经变化");
+        }
+
+        #[test]
+        fn test_elevation_changes_declination() {
+            let mut req1 = default_req();
+            req1.elevation_angle = 20.0;
+            let r1 = run_virtual_rotation(&req1, &test_config_dir()).unwrap();
+
+            let mut req2 = default_req();
+            req2.elevation_angle = 70.0;
+            let r2 = run_virtual_rotation(&req2, &test_config_dir()).unwrap();
+
+            assert!(r1.pointing_dec != r2.pointing_dec,
+                    "高度角变化应导致指向赤纬变化");
+        }
+
+        #[test]
+        fn test_all_four_instruments_work() {
+            let instruments = vec!["hunyi", "jianyi", "xiangyiyi", "modern_eq"];
+            for inst in instruments {
+                let mut req = default_req();
+                req.instrument = inst.to_string();
+                let result = run_virtual_rotation(&req, &test_config_dir());
+                assert!(result.is_ok(), "{} 虚拟操作应正常", inst);
+                let r = result.unwrap();
+                assert!(r.transmission_error > 0.0, "{} 传动误差应>0", inst);
+            }
+        }
+    }
+}

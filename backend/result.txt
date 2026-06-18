@@ -1,0 +1,316 @@
+﻿cargo : warning: unused import: `debug`
+所在位置 行:1 字符: 98
++ ... _B_146\backend; $output = cargo test -- --test-threads=1 2>&1; $outpu ...
++                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: unused import: `debug`:S 
+   tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  --> src\alarm_ws.rs:12:34
+   |
+12 | use tracing::{error, info, warn, debug};
+   |                                  ^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `info`
+ --> src\dtu_receiver.rs:5:29
+  |
+5 | use tracing::{debug, error, info, warn};
+  |                             ^^^^
+
+warning: unused import: `debug`
+ --> src\pointing_analyzer.rs:8:34
+  |
+8 | use tracing::{error, info, warn, debug};
+  |                                  ^^^^^
+
+warning: unused import: `debug`
+  --> src\transmission_simulator.rs:11:34
+   |
+11 | use tracing::{error, info, warn, debug};
+   |                                  ^^^^^
+
+warning: variable does not need to be mutable
+  --> src\alarm_ws.rs:39:13
+   |
+39 |         let mut last = self.last_alarm_times.lock();
+   |             ----^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable `total_temp` is assigned to, but never used
+  --> src\degradation_sim.rs:49:13
+   |
+49 |         let mut total_temp = 0.0;
+   |             ^^^^^^^^^^^^^^
+   |
+   = note: consider using `_total_temp` instead
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by defaul
+t
+
+warning: value assigned to `total_temp` is never read
+  --> src\degradation_sim.rs:69:13
+   |
+69 |             total_temp += r.temperature_effect;
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by defa
+ult
+
+warning: unused variable: `az_rad`
+   --> src\pointing_analyzer.rs:103:13
+    |
+103 |         let az_rad = az * DEG_TO_RAD;
+    |             ^^^^^^ help: if this is intentional, prefix it with an unders
+core: `_az_rad`
+
+warning: unused variable: `flex`
+   --> src\pointing_analyzer.rs:165:13
+    |
+165 |         let flex = Self::tube_flexure(t_el, 0.08);
+    |             ^^^^ help: if this is intentional, prefix it with an undersco
+re: `_flex`
+
+warning: methods `insert_gear_status`, `query_recent_sensor_readings`, `query_r
+ecent_alarms`, and `query_pointing_stats_by_zone` are never used
+   --> src\clickhouse.rs:72:18
+    |
+ 14 | impl ClickHouseClient {
+    | --------------------- methods in this implementation
+...
+ 72 |     pub async fn insert_gear_status(&self, g: &GearStatus) -> Result<(), 
+Box<dyn Error + Send + Sync>> {
+    |                  ^^^^^^^^^^^^^^^^^^
+...
+ 81 |     pub async fn query_recent_sensor_readings(&self, device_id: &str, lim
+it: u32) -> Result<Vec<SensorReading>, Box<dyn Error + Sen...
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 99 |     pub async fn query_recent_alarms(&self, limit: u32) -> Result<Vec<Ala
+rmEvent>, Box<dyn Error + Send + Sync>> {
+    |                  ^^^^^^^^^^^^^^^^^^^
+...
+117 |     pub async fn query_pointing_stats_by_zone(&self, device_id: &str, hou
+rs: u32) -> Result<Value, Box<dyn Error + Send + Sync>> {
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `validation_rules` is never used
+  --> src\dtu_receiver.rs:93:12
+   |
+13 | impl DtuReceiver {
+   | ---------------- method in this implementation
+...
+93 |     pub fn validation_rules(&self) -> &crate::models::ValidationRanges {
+   |            ^^^^^^^^^^^^^^^^
+
+warning: static `HTTP_REQUESTS_TOTAL` is never used
+ --> src\metrics.rs:7:12
+  |
+7 | pub static HTTP_REQUESTS_TOTAL: Lazy<IntCounterVec> = Lazy::new(|| {
+  |            ^^^^^^^^^^^^^^^^^^^
+
+warning: static `HTTP_REQUEST_DURATION` is never used
+  --> src\metrics.rs:16:12
+   |
+16 | pub static HTTP_REQUEST_DURATION: Lazy<HistogramVec> = Lazy::new(|| {
+   |            ^^^^^^^^^^^^^^^^^^^^^
+
+warning: static `CHANNEL_QUEUE_SIZE` is never used
+   --> src\metrics.rs:105:12
+    |
+105 | pub static CHANNEL_QUEUE_SIZE: Lazy<IntGauge> = Lazy::new(|| {
+    |            ^^^^^^^^^^^^^^^^^^
+
+warning: function `gather` is never used
+   --> src\metrics.rs:113:8
+    |
+113 | pub fn gather() -> Vec<prometheus::proto::MetricFamily> {
+    |        ^^^^^^
+
+warning: variant `Channel` is never constructed
+  --> src\models.rs:20:5
+   |
+14 | pub enum HunyiError {
+   |          ---------- variant in this enum
+...
+20 |     Channel(String),
+   |     ^^^^^^^
+   |
+   = note: `HunyiError` has a derived impl for the trait `Debug`, but this is i
+ntentionally ignored during dead code analysis
+
+warning: fields `hertz_k_n_m15`, `restitution_coeff`, `damping_ratio`, `tooth_e
+quiv_mass_kg`, `contact_iterations`, and `contact_dt_s` are never read
+   --> src\models.rs:190:9
+    |
+189 | pub struct GearMaterialParams {
+    |            ------------------ fields in this struct
+190 |     pub hertz_k_n_m15: f64,
+    |         ^^^^^^^^^^^^^
+191 |     pub restitution_coeff: f64,
+    |         ^^^^^^^^^^^^^^^^^
+192 |     pub damping_ratio: f64,
+    |         ^^^^^^^^^^^^^
+193 |     pub tooth_equiv_mass_kg: f64,
+    |         ^^^^^^^^^^^^^^^^^^^
+194 |     pub contact_iterations: usize,
+    |         ^^^^^^^^^^^^^^^^^^
+195 |     pub contact_dt_s: f64,
+    |         ^^^^^^^^^^^^
+    |
+    = note: `GearMaterialParams` has derived impls for the traits `Clone` and `
+Debug`, but these are intentionally ignored during dead code analysis
+
+warning: field `gear_material` is never read
+   --> src\models.rs:224:9
+    |
+222 | pub struct GearParamsConfig {
+    |            ---------------- field in this struct
+223 |     pub shaft: ShaftParams,
+224 |     pub gear_material: GearMaterialParams,
+    |         ^^^^^^^^^^^^^
+    |
+    = note: `GearParamsConfig` has derived impls for the traits `Clone` and `De
+bug`, but these are intentionally ignored during dead code analysis
+
+warning: variants `AlarmTriggered` and `AllComputed` are never constructed
+   --> src\models.rs:275:5
+    |
+271 | pub enum PipelineMessage {
+    |          --------------- variants in this enum
+...
+275 |     AlarmTriggered(Arc<AlarmEvent>),
+    |     ^^^^^^^^^^^^^^
+276 |     AllComputed(Arc<SensorReading>, Vec<Arc<TransmissionErrorResult>>, Ar
+c<PointingAccuracyResult>),
+    |     ^^^^^^^^^^^
+    |
+    = note: `PipelineMessage` has derived impls for the traits `Clone` and `Deb
+ug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `torsion_stiffness`, `bending_stiffness`, and `mass_moment` are
+ never read
+  --> src\pointing_analyzer.rs:14:5
+   |
+13 | struct FlexibleAxisParams {
+   |        ------------------ fields in this struct
+14 |     torsion_stiffness: f64,
+   |     ^^^^^^^^^^^^^^^^^
+15 |     bending_stiffness: f64,
+   |     ^^^^^^^^^^^^^^^^^
+...
+18 |     mass_moment: f64,
+   |     ^^^^^^^^^^^
+
+warning: function `analyze_pointing` is never used
+   --> src\pointing_analyzer.rs:222:8
+    |
+222 | pub fn analyze_pointing(reading: &SensorReading) -> PointingAccuracyResul
+t {
+    |        ^^^^^^^^^^^^^^^^
+
+warning: constant `ARCMIN_TO_RAD` is never used
+  --> src\transmission_simulator.rs:14:7
+   |
+14 | const ARCMIN_TO_RAD: f64 = std::f64::consts::PI / (180.0 * 60.0);
+   |       ^^^^^^^^^^^^^
+
+warning: methods `material`, `hertz_contact_force`, and `simulate_backlash_coll
+ision` are never used
+  --> src\transmission_simulator.rs:47:8
+   |
+24 | impl TransmissionSimulator {
+   | -------------------------- methods in this implementation
+...
+47 |     fn material(&self) -> &GearMaterialParams {
+   |        ^^^^^^^^
+...
+55 |     fn hertz_contact_force(&self, delta: f64, delta_dot: f64, wear_level: 
+f64) -> (f64, f64, f64) {
+   |        ^^^^^^^^^^^^^^^^^^^
+...
+78 |     pub fn simulate_backlash_collision(
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `hunyi-backend` (bin "hunyi-backend" test) generated 23 warnings (run 
+`cargo fix --bin "hunyi-backend" -p hunyi-backend --tests` to apply 7 suggestio
+ns)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.35s
+     Running unittests src\main.rs (target\debug\deps\hunyi_backend-ccd1fcc0ae4
+65651.exe)
+
+running 65 tests
+test degradation_sim::tests::boundary_cases::test_high_elevation_high_etc ... ok
+test degradation_sim::tests::boundary_cases::test_high_wear_rate_clamps_at_99 ... ok
+test degradation_sim::tests::boundary_cases::test_one_step_two_points ... ok
+test degradation_sim::tests::boundary_cases::test_zero_hours_multiple_points ... ok
+test degradation_sim::tests::boundary_cases::test_zero_wear_rate_stable ... ok
+test degradation_sim::tests::error_cases::test_invalid_instrument_returns_error ... ok
+test degradation_sim::tests::error_cases::test_modern_eq_degrades_slower ... ok
+test degradation_sim::tests::error_cases::test_zero_steps_clamped_to_one ... ok
+test degradation_sim::tests::error_components::test_all_components_positive ... ok
+test degradation_sim::tests::error_components::test_wear_error_component_grows ... ok
+test degradation_sim::tests::normal_cases::test_cumulative_error_increases_with_wear ... ok
+test degradation_sim::tests::normal_cases::test_data_points_monotonic_wear ... ok
+test degradation_sim::tests::normal_cases::test_degradation_basic_structure ... ok
+test degradation_sim::tests::normal_cases::test_elapsed_hours_linear_progress ... ok
+test degradation_sim::tests::normal_cases::test_etc_within_reasonable_range ... ok
+test degradation_sim::tests::normal_cases::test_wear_starts_at_initial ... ok
+test instrument_comparison::tests::comparison_run::test_all_four_instruments ... ok
+test instrument_comparison::tests::comparison_run::test_boundary_90_elevation ... ok
+test instrument_comparison::tests::comparison_run::test_boundary_full_wear ... ok
+test instrument_comparison::tests::comparison_run::test_boundary_zero_azimuth ... ok
+test instrument_comparison::tests::comparison_run::test_cross_era_comparison ... ok
+test instrument_comparison::tests::comparison_run::test_empty_instruments ... ok
+test instrument_comparison::tests::comparison_run::test_error_components_positive ... ok
+test instrument_comparison::tests::comparison_run::test_invalid_instrument_returns_error ... ok
+test instrument_comparison::tests::comparison_run::test_result_consistency_same_input ... ok
+test instrument_comparison::tests::comparison_run::test_single_instrument_comparison ... ok
+test instrument_comparison::tests::comparison_run::test_temperature_effect ... ok
+test instrument_comparison::tests::comparison_run::test_two_ancient_instruments ... ok
+test instrument_comparison::tests::comparison_run::test_wear_increases_error ... ok
+test instrument_comparison::tests::config_loading::test_load_hunyi_config ... ok
+test instrument_comparison::tests::config_loading::test_load_jianyi_config ... ok
+test instrument_comparison::tests::config_loading::test_load_modern_eq_config ... ok
+test instrument_comparison::tests::config_loading::test_load_xiangyiyi_config ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_case_insensitive ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_chinese_name_alias ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_hunyi_normal ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_jianyi_normal ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_modern_eq_normal ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_unknown_returns_none ... ok
+test instrument_comparison::tests::instrument_type_parsing::test_parse_xiangyiyi_normal ... ok
+test virtual_op::tests::boundary_cases::test_360_azimuth_boundary ... ok
+test virtual_op::tests::boundary_cases::test_90_elevation_boundary ... ok
+test virtual_op::tests::boundary_cases::test_full_wear_boundary ... ok
+test virtual_op::tests::boundary_cases::test_high_temperature ... ok
+test virtual_op::tests::boundary_cases::test_negative_temperature ... ok
+test virtual_op::tests::boundary_cases::test_pointing_at_north_polar_zone ... ok
+test virtual_op::tests::boundary_cases::test_zero_azimuth_boundary ... ok
+test virtual_op::tests::boundary_cases::test_zero_elevation_boundary ... ok
+test virtual_op::tests::boundary_cases::test_zero_wear_boundary ... ok
+test virtual_op::tests::error_cases::test_extreme_angles_no_panic ... ok
+test virtual_op::tests::error_cases::test_invalid_instrument_returns_error ... ok
+test virtual_op::tests::instrument_comparison::test_modern_eq_lower_error ... ok
+test virtual_op::tests::instrument_comparison::test_wear_increases_error ... ok
+test virtual_op::tests::normal_cases::test_sky_zone_valid_values ... ok
+test virtual_op::tests::normal_cases::test_star_names_not_empty ... ok
+test virtual_op::tests::normal_cases::test_virtual_rotation_basic ... ok
+test virtual_op::tests::normal_cases::test_visible_stars_near_polaris ... ok
+test virtual_op::tests::normal_cases::test_visible_stars_sorted_by_distance ... ok
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_non_negative ... ok
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_opposite_points ... ok
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_same_point ... ok
+test virtual_op::tests::star_catalog_integrity::test_angular_distance_symmetric ... ok
+test virtual_op::tests::virtual_operation_intuitiveness::test_all_four_instruments_work ... ok
+test virtual_op::tests::virtual_operation_intuitiveness::test_azimuth_changes_pointing ... ok
+test virtual_op::tests::virtual_operation_intuitiveness::test_elevation_changes_declination ... ok
+
+test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
